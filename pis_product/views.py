@@ -3161,6 +3161,8 @@ def zz(request):
 
         qties = 0
         for i in prices:
+            if float(i[1]) < 0:
+                data.append([item.id, qties, item.stock])
             qties+=float(i[1])
         if qties != item.stock:
             data.append([item.id, qties, item.stock])
