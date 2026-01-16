@@ -1,0 +1,56 @@
+{% for i in factures %}
+    <tr class="facturestr" {% if i.ispaid %}style="background:yellowgreen;"{% endif %}>
+        <td>
+            {{ i.facture_no }} (Facture)
+        </td>
+        <td>{% if i.client %}{{ i.client.customer_name|title}}{% else %}-{% endif %}</td>
+        <td>{{ i.total|floatformat:2 }}</td>
+        <td>{{ i.date|date:"d/m/Y" }}</td>
+        <td>
+            <a href="/product/modifierfacture/?id={{i.id}}">Modifer</a>
+            <a href="{% url 'product:facturedetails' id=i.id %}"><button class="btn btn-xs fa fa-download bg-primary"></button></a>
+            {% if i.ispaid %}{{i.note}}{%endif%}
+            <!-- <a href="{% url 'product:facturedetails1' id=i.id %}"><button class="btn btn-xs fa fa-download bg-primary"></button>B.L</a>
+            <a href="{% url 'product:facturedetails2' id=i.id %}"><button class="btn btn-xs fa fa-download bg-primary"></button>B.C</a>
+            <a href="{% url 'product:facturedetails3' id=i.id %}"><button class="btn btn-xs fa fa-download bg-primary"></button>IMTRC</a> -->
+            <!-- <a href="/product/deleteinfacture?id={{i.id}}" class="btn btn-danger"></a> -->
+        </td>
+    </tr>
+{% endfor %}
+{% for i in devis %}
+    <tr class="devistr">
+        <td>
+            {{ i.Devise_no }} (Devis)
+        </td>
+        <td>{% if i.client %}{{ i.client.customer_name|title}}{% else %}-{% endif %}</td>
+        <td>{{ i.total|floatformat:2 }}</td>
+        <td>{{ i.date|date:"d/m/Y" }}</td>
+        <td>
+            <a href="{% url 'product:devisedetails' id=i.id %}"><button class="btn btn-xs fa fa-download"></button></a>
+            <a href="/product/modifierdevi?id={{i.id}}"><button class="btn btn-xs fa fa-list">Modifier</button></a>
+            <a href="/product/deletedevi?id={{i.id}}"><button class="btn btn-xs fa fa-terash btn-danger">Supprimer</button></a>
+            
+
+        </td>
+    </tr>
+{% endfor %}
+{% for i in releves %}
+    <tr class="relevetr">
+        <td>{{i.facture_no}} (Releve)</td>
+        
+        <td>{% if i.client %}{{ i.client.customer_name|title}}{% else %}-{% endif %}</td>
+        <td>{{ i.total|floatformat:2 }}</td>
+        <td>{{ i.datefrom|date:"d/m/Y" }}</td>
+        <!-- <td>{{ i.dateto|date:"d/m/Y" }}</td> -->
+        <td>
+            
+            <button class="btn btn-xs fa fa-download bg-primary" onclick="printreleve('{{i.id}}')"></button>
+            <a class="btn btn-success fa fa-edit" href="/product/modifierreleve?id={{i.id}}"></a>
+            {% if i.ispaid %}
+            Relve est Reglé
+            {% else %}
+            <a class="btn btn-dark" href="/product/reglerelve?id={{i.id}}">Regler</a>
+            {%endif%}
+        </td>
+    </tr>
+{% endfor %}

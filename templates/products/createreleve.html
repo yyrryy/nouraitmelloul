@@ -1,0 +1,429 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block menu_sales %}active{% endblock %}
+{% block submenu_create_bill %}active{% endblock %}
+{% block content %}
+	<style>
+        .autocomplete-list {
+      border: 1px solid #ccc;
+      max-height: 150px;
+      overflow-y: auto;
+      position: absolute;
+      background: white;
+      z-index: 1000;
+    }
+    .autocomplete-item {
+      padding: 8px;
+      cursor: pointer;
+    }
+    .autocomplete-item:hover {
+      background: #f0f0f0;
+    }
+		.item-row th {
+			background: #eee;
+		}
+
+		.delete-btn {
+			position: relative;
+		}
+
+		
+	</style>
+
+
+
+
+<div class="row mb-3">
+
+
+    <!-- bon articles -->
+    <div class="shadow rounded p-2 bg-white col-10">
+        <div class="w-100">
+            <h4 class="rounded p-2 text-center text-white" style="background: black;">{{title}}</h4>
+        </div>  
+        <div class="alert alert-danger text-center item-error" style="display: none;" role="alert">
+        </div>
+        <div class="d-flex justify-content-between mt-3">
+                <div>
+                    <strong>Du:</strong><br>
+                    <input type="date" class="datefrom">
+                </div>
+                <div>
+                    <strong>Au:</strong><br>
+                    <input type="date" class="dateto">
+                </div>
+                <div>
+                    <select class="form-selsect select2 customer " name="customer" id="customer">
+                        <option value="0">
+                            Client
+                        </option>
+                        {% for customer in customers %}
+                            <option value="{{ customer.id }}">{{ customer.customer_name }}</option>
+                        {% endfor %}
+                    </select><br>
+                    <!-- <button type="button" class="btn btn-success addoneproduct" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        + Client
+                    </button> -->
+                </div>
+                
+            
+        </div>
+        <hr>
+        <div class="accordion" id="accordionExample">
+            
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  +Facture
+                </button>
+              </h2>
+              <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                <div class="accordion-body bg-white">
+                    <div class="bg-white">
+                      <div class="mb-3 row p-2 rounded" style="background:rgb(34, 25, 71);">
+                        
+                        <div class="itemsselectholder col-3">
+                            <input class="form-control article" name="facture" placeholder="Facture" id="autocomplete-input" onchange="getfacturedate(event)">
+                            <div id="autocomplete-container"></div>
+                        </div>
+                        <div class="col-3">
+                                    
+                            <input type="date" class="datefactureinp form-control" placeholder="Date">
+                            <div class="addstock text-white"></div>
+                        </div>
+                        <div class="col-3">
+                            
+                            <input type="number" class="totalfactureinp form-control" placeholder="Total">
+                            <div class="addprice text-white"></div>
+                        </div>
+                        
+                        <div class="col-1">
+            
+                            <button class="btn btn-primary w-100" onclick="addrow()">+</button>
+                        </div>
+                        <input type="text" class="addname" hidden>
+                    </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        <div id="item-data-sc" class="table-responsive item-data-sc">
+            <table class="table table-bordered">
+                <thead>
+                <tr class="">
+                    <th style="width: 45%;">Facture</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody class="itemsbon">
+                
+                </tbody>
+            </table>
+            
+
+        </div>
+    </div>
+
+
+    <!-- bon billing -->
+    <div class="col-2" style="right:0; ">
+
+        <div class="shadow bg-white p-2 rounded">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tbody>
+                    <tr hidden>
+                        <td></td>
+                        <td></td>
+                        <td class="text-right"><strong>Sub Total</strong></td>
+                        <td><span id="subtotal">0.00</span></td>
+                    </tr>
+                    <tr hidden>
+                        <td></td>
+                        <td></td>
+                        <td class="text-right"><strong>Discount</strong></td>
+                        <td><input autocomplete="off" class="form-control" id="discount" value="0" type="text"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-right"><strong>Avance</strong></td>
+                        <td><input autocomplete="off" class="form-control" id="avance" value="0" type="number" onkeyup="updatetotal()"></td>
+                    </tr>
+                    <tr>
+                        <!-- <td><strong>Total Qty: </strong><span id="totalQty" style="color: red; font-weight: bold">0</span></td> -->
+                        
+                        <td class="text-right"><strong>Total</strong></td>
+                        <td><span id="grandTotal" style="color:red">0</span></td>
+                    </tr>
+                    <tr hidden>
+                        <td class="text-right"><strong>Payé</strong></td>
+                        <td><input autocomplete="off" class="form-control" id="paidAmount" value="0" type="number"></td>
+                    </tr>
+                    <tr hidden>
+                        <td class="text-right"><strong>Rest</strong></td>
+                        <td><span id="remainingAmount">0</span></td>
+                    </tr>
+                    
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between">
+                <!-- <button class="btn btn-primary paid">
+                    Payé
+                </button> -->
+                <a style="font-size: large" id="create-invoice" href="javascript:;" title="Create Invoice" class="btn btn-primary pull-right" id="load" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing Order">Valider</a>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script>
+        //const suggestions = ["CLAXSON", "TEMBEUR", "LAJOGE HUIL", "SIRVO EMB", "GUID TIGE VITASS", "BRA COMPLEMENT", "PLACA", "EQUILIBREUR LICULIBLOR", "RONDIL INJECTEUR", "POMPE AMORSAGE VANTOZ", "BAG DIRECTION", "STOP MOTOR VANTOZ", "MANO POMPE GASOIL", "CARCAS FILTER HUIL COMPLET", "PAPION", "RMANA", "LAMPE", "TUBE DE HUIL TURBO", "TEYO VASSE DEAU", "CAPTEU AIR PNEU", "AMBRACAM", "ROULMENT DEMARRORE", "ROULMENT DEMARRORE", "ROULMENT DEMARRORE", "ROULMENT DEMARRORE", "JOINT FILTER BV", "CLAPI EMBRYAGE", "SUPPORT BAR SOCOSS", "MANO FREIN", "DURITE CHOUFFAGE", "JOINT CELCETOURES", "VANTOUZE TURBO", "ROULMENT TENDEUR", "ROULMENT CLIMA", "ROULMENT MANCHO", "Radiateur, réaspiration des gaz d'échappement", "ATACH POMPE EMB", "HUIL BV", "AMORTISSEUR CAPOT", "N/C VITASS", "PORTE CHARBON", "AMORTISSEUR DIRECTION", "NEFLOR", "CARE CASSE POMPE EAU", "AGRAF CACHE MOTOR", "FIXIBLE EMBRYAGE", "BUTTE SUSPONSOIN AR", "FIXIBLE FRIEN", "BAG BIELL", "OPTIQUE", "LATRESSE CARTER", "FIXIBLE DINAMO", "CARE CASSE FILTER AIR", "TEMPERATUER", "ROULMENT AMORTISEUR", "VENTILATEUR", "CRIBEN POMPE DE HUIL", "N/C DEMARREUR", "MANO CLIM", "TUYAU POMPE EMBARYAGE", "MANO FILTER GASOIL", "KIT ROULMENT", "JOINT ADMITION", "JOINT PLACA", "FREDOIT", "FEUX ARRIRE", "MANO CARTER", "CARTER", "BAGUE FOURCHETTE", "bouchon de huile moteur", "CARCAS FILTER HUIL SEMPEL KHAWI", "LIVALVE INJECTEUR", "MANO ARANTI", "TUBE EAU", "cache amortisseur", "MANO STOP", "JOINT CHEMISE", "CROISILON DIRICTION", "CHEMISE", "AMORTISSEUR TENDEUR", "AX PIVO", "CARCAS AIR TURBO", "PINIO CHAIN", "COUP COURANT", "BAG AMBRACAM", "LAJOGE GASIO", "MANO ARRIERE", "ATACHE CABLE EMBRYAG", "Résistons", "AMORTISSEUR MALLA", "REPARTITEUR FRIEN", "FILL BOUGE", "CABLE VETASSE", "GLESIR", "COMONDO ELECTRIQUE", "BOTON GLASSE", "ROULMENT CARDANT", "DURIT NEFLOUR", "PISTON POMPE AGASIOL", "CABLE ACC", "SUPPORT ECHAPPEMENT", "DURITE AIR", "AX POMPE HUIL", "IDWA", "BOCHON RADIATEUR", "Couvert cache soupape", "GOUPELL DE RUE", "CAPTEUR ABS", "TURBO", "POUSSOIR ED SOUPAPE", "PINIO CONTEUR", "BOUCHON VASSE DENT MOTOR", "DIMAROR", "DIBIMTER", "MOTOR VASE DE", "POMPE ESSNCE", "POINI", "PORT BUTTE", "MANCHO ESEAU", "JOINT POMPE HUIL", "FLECTOR DIRECTION", "N/C INJECTEUR", "VAN EGR", "POMPE GASOIL", "FICHE CONTACT", "ALTIRNATEUR", "CLIMAIRE DIRECTION", "ROULMENT ALTIRNATEUR", "SOUFFLET CARDENT", "ROULMENT B.V", "SPIRAL", "JOINT REFRIGERANT D HUILE", "CAL ATERAL", "JAUGE DE HUILE", "COLECTEUR", "FILTER ESSENCE", "N/C LIESEU ARRIERE", "FILTER B.V", "POMPE OXILER", "INJECTEUR", "BOUGIE PRECHAUFFAGE", "C/P", "MANO HUIL", "CHARBON", "N/C EMBRYAGE", "GUIDE SOUPAPE", "CAOUATCHO CLEMAILLERE", "TETE POMPE GASOIL", "COUPLEUR", "JOINT CARTER", "FLECTEUR CARDENT", "POULIE EMB ALTERNATEUR", "BOUGIE ALLUMAGE ESSANCE", "SUPPORT CARDENT", "MANO COMORAI", "INDUI DEMAROR", "AX FISI", "RELAIS DIMAROR", "CROISILLON CARDAN", "BOTON FRIEN AMAN", "GUIDE LAJOJE HUIL", "VASE DE HUILE", "BIDALLE EMB", "TUBE RETOUR", "TRIANGLE", "POMPE HUIL", "PIVO", "CULBUTEUR", "REGULATEUR", "BOCHON FILTER HUIL", "TETE FILTER GASOIL", "POULIE VILBROCAL", "CAPTEUR", "CABLE FRIEN", "KIT DISTRUBITION", "ARRETE HUIL INJECTEUR", "DISQUE EBMRYAGE", "MANO TEMPERATURE", "ARRET HUIL DEVER", "ROTROVISEUR", "CABLE CONTEUR", "POMPE ASSISTÉE", "PORCHETTE JOINT", "SOUPAPE", "KIT EMBRYAGE", "REGULATEUR TURBO", "VOLLANT MOTOR", "CHAINE DISTRIBUTION", "CARDANT", "DURITE EAU", "CABLE EMBRYAGE", "PLATEAU EMBRYAGE", "FOURCHETTE EMBRYAGE", "VASE DE EAU MOTOR", "TETE CARDAN", "COURROIE ALTIRNATEUR", "TEMOIN DE PLAQUETTE", "PIPE EAU THERMOSTAT", "CHAPPE DIRECTION", "BUTTE EMBRYAGE", "TIGE VITASSE", "MOYAU", "BOBINE D ALLUMAGE", "POMPE EAU", "REFRIGERANT d'huile", "bras suspension", "DURITE TURBO", "ARRET D HUILE SOUPAPE", "ROULMENT", "SILENTBLOC", "POMPE EMB", "SUPPORT MOTOR", "BENDEX", "TENDEUR", "BIELLETTE DIRECTION", "PISTON", "FILTER CLIM", "FILTER GASOIL", "FILTER AIR", "JOINT CACHE SOUPAPE", "SEGMENT", "JOINT CULASSE", "FILTER HUILE", "C/B", "SOUFLET DIRECTION", "ROTULE", "SUPPORT AMORTISSEUR", "AMORTISSEUR", "CAOUATCHO BAR SOCOS", "BIELLETTE STABILISATRICE", "N/C FREIN", "POMPE FREIN", "CYLINDEI DE FREIN", "DISQUE FREIN", "PLAQUETTE DE FREIN"]
+
+        // const input = document.getElementById('autocomplete-input');
+        // const container = document.getElementById('autocomplete-container');
+
+        // input.addEventListener('input', () => {
+        // const query = input.value.toLowerCase();
+        // container.innerHTML = '';
+
+        // if (query) {
+        //     const filtered = suggestions.filter(item => item.toLowerCase().startsWith(query));
+
+        //     filtered.forEach(item => {
+        //     const div = document.createElement('div');
+        //     div.textContent = item;
+        //     div.classList.add('autocomplete-item');
+        //     div.addEventListener('click', () => {
+        //         input.value = item;
+        //         container.innerHTML = '';
+        //     });
+        //     container.appendChild(div);
+        //     });
+        // }
+        // });
+
+        // document.addEventListener('click', (e) => {
+        // if (!container.contains(e.target) && e.target !== input) {
+        //     container.innerHTML = '';
+        // }
+        // });
+        function removeline(event){
+            $(event.target).closest('tr').remove();
+            total=parseFloat($(event.target).closest('tr').find('.totalfacture').text())
+            oldtotal=parseFloat($('#grandTotal').text())
+            $('#grandTotal').text((oldtotal-total).toFixed(2))
+            
+            
+        }
+        function addrow(){
+            
+            parentdiv=$(this).parent().parent()
+            datefacture=$('.datefactureinp').val()
+            totalfacture=$('.totalfactureinp').val()
+            facture=$('.article').val()
+            if (facture=='' || totalfacture=='' || datefacture==''){
+                alertify.error('Champs vide')
+                return
+            }
+          
+            
+            
+        //   if (pdcts.includes(id)){
+        //     console.log('in locals')
+        //     dx=pdcts.indexOf(id)
+            
+        //     // get index of id
+            
+            
+        //     bonitems[dx].qty=parseInt(bonitems[dx].qty)+1
+        //     pricesfromlocalstorage=bonitems[dx].prices
+        //     pricesfromlocalstorage.push((parseInt(datefacture)*parseFloat(totalfacture)).toFixed(2))
+        //     bonitems[dx].prices=pricesfromlocalstorage
+        //     // insert it in index to remain the same order, order is important here
+        //     localStorage.setItem('bonitems',JSON.stringify(bonitems))
+           
+        //     let qtyinput=$(`#itemrow${id}`).find('.qty')
+        //     let total=$(`#itemrow${id}`).find('.total')
+        //     let price=$(`#itemrow${id}`).find('.price')
+        //     // to calculate ponire we need to store the qtys*prices
+        //     prices=JSON.parse(price.attr('prices'))
+        //     prices.push((parseInt(datefacture)*parseFloat(totalfacture)).toFixed(2))
+        //     sum=0
+        //     for (i of prices){
+        //         sum+=i
+        //     }
+        //     newqty=parseInt(qtyinput.val())+parseInt(datefacture)
+        //     pondir=sum/newqty
+        //     qtyinput.val(newqty)
+        //     price.val(pondir)
+        //     total.text(sum)
+        //     $(`#itemrow${id}`).css('background', 'greenyellow')
+        //     setTimeout(() => {
+        //         $(`#itemrow${id}`).css('background', 'none')
+        //     }, 2500);
+        //     jQuery().invoice().init
+
+        //     return
+        //   }
+        function updatetotal(){
+            totals=$('.totalfacture')
+            sum=-parseFloat($('#avance').val())
+            for (let i of  totals){
+                sum+=parseFloat($(i).text())
+            }
+            $('#grandTotal').text(sum)
+        }
+        $('.itemsbon').prepend(`<tr class="item-row"><td id="item-name" class="item-name"><strong class="invoice-item" id="invoice-item">${facture}</strong></td><td class="datefacture">${datefacture}</td><td class="totalfacture">${totalfacture}</td><td><i class="btn btn-danger delete" title="Supprimer" onclick="removeline(event)"></i></td></tr>`);
+        oldtotal=parseFloat($('#grandTotal').text())
+        avance=parseFloat($('#avance').val())
+
+       $('#grandTotal').text(oldtotal+parseFloat(totalfacture)-avance)
+        $('.article').focus()
+        $('.article').val('')
+        $('.datefactureinp').val('')
+        $('.totalfactureinp').val('')
+        
+        // emptying the fields
+        
+
+    }
+        
+        // set products in local storage
+        // remove prdcts localstorage when valider
+        
+        
+    $(document).ready(function () {
+        function showerror(m){
+            $('.item-error').show().text(m)
+        }
+        // add client
+        $('.addclientbtn').on('click', ()=>{
+            if($('.customer').val() == ''|| $('.customer_phone').val()==''){
+                console.log('error')
+                $('.customererror').show();
+                return false;
+            }else{
+                $('.addclientbtn').addClass('disabled')
+                $.post(
+                    '{% url "product:addclient" %}',
+                    {
+                        'name':$('.customer').val(),
+                        'phone':$('.customer_phone').val(),
+                        'ice':$('.customer_ice').val(),
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    function(data){
+                        location.reload();
+                    }
+                )
+            }
+        })
+
+        
+        
+        
+
+
+        $('.paid').on('click', ()=>{
+            let total=$('#grandTotal').text()
+            // assign total to received
+            $('#paidAmount').val(total)
+        })
+
+        $('.btn-primary').on('click', function () {
+            $('.item-error').hide();
+        });
+    });
+    </script>
+    <script>
+        $('#create-invoice').on('click', function() {
+            let customer=$('#customer').val()
+            let items=[]
+            let total=$('#grandTotal').text()
+            let avance=$('#avance').val()
+            datefrom=$('.datefrom').val(),
+            dateto=$('.dateto').val(),
+            itemrows=$('.item-row').toArray();
+            if (itemrows.length==0){
+                alertify.error('Ajouter des articles')
+                return
+            }
+            for (i of itemrows){
+                article=$(i).find('.invoice-item').text()
+                datefacture=$(i).find('.datefacture').text()
+                totalfacture=$(i).find('.totalfacture').text()
+                item={
+                    'article':article,
+                    'datefacture':datefacture,
+                    'totalfacture':totalfacture,
+                }
+                items.push(item)
+            }
+            if (customer==0){
+                alertify.error('Client obligatoire')
+                return
+            }
+            if (dateto=='' || datefrom==''){
+                alertify.error('Date obligatoire')
+                return 
+            }
+            if (total==0){
+                alertify.error('Total obligatoire')
+                return
+            }
+            $(this).button('loading');
+            console.log(items)
+            $.post(
+                '{% url "product:createreleve" %}',
+                {
+                    'customer':customer,
+                    'items':JSON.stringify(items),
+                    'total':total,
+                    'avance':avance,
+                    'datefrom':$('.datefrom').val(),
+                    'dateto':$('.dateto').val(),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                function(data){
+                    if (data.error){
+                        alertify.error(data.error)
+                        $('#create-invoice').button('reset');
+                    }
+                    else{
+                        alertify.success('Facture crée')
+                        
+                        location.href='/product/listreleve'
+                    }
+                }
+            )
+        });
+
+        // $('.form-control').click (function () {
+        //     $('.list-error').hide();
+        //     checkDec(this);
+
+        // });
+
+        // function checkDec(el){
+        //     var ex = /^[0-9]+\.?[0-9]*$/;
+        //     if(ex.test(el.value)==false){
+        //         el.value = el.value.substring(0,el.value.length - 1);
+        //     }
+        // }
+    </script>
+{% endblock %}

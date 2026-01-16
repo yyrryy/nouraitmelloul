@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Barcodes</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Define label size based on your thermal printer */
+        .label {
+            width: 50mm; /* Adjust to match your label size */
+            height: 25mm; /* Adjust to match your label size */
+            overflow: hidden;
+            display: flex;
+            position: relative;
+            margin-left: 3px;
+            /* display: flex;
+            flex-direction: column;
+            align-items: center; */
+            /* margin-bottom: 1mm; */
+            /*page-break-after: always;  Ensures each label is printed separately */
+        }
+
+        /* Ensure barcode images fit properly */
+        /* .barcode-img {
+            width: 100%;
+            height: auto;
+            margin-top: 2px;
+        } */
+        .barcode-img {
+            width: 26%;
+            position: absolute;
+            bottom: 0;
+            right: 10px;
+        }
+
+        /* Hide everything except the barcodes when printing */
+
+
+    </style>
+</head>
+<body>
+
+    <div class="print-area">
+        <!-- Example: Loop over barcode images -->
+        <div class="label">
+            <img class="barcode-img" src="data:image/png;base64,{{ barcodes }}" alt="Barcode">
+            <!-- <div style="font-size: 12px; padding-left: 17px; margin-top: -5px;">{{text}}</div> -->
+            <!-- <strong style="font-size: 12px;margin-top: 10px;margin-left: -8px;">{{text}}</strong> -->
+            <strong style="font-size: 12px">{{text}}</strong>
+        </div>
+    </div>
+
+</body>
+</html>

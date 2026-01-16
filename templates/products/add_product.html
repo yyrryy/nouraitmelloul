@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% block submenu_add_product %}active{% endblock %}
+{% block menu_product %}active{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="modal-body col-9">
+    <form method="post" action="{% url 'product:addoneproduct' %}" enctype="multipart/form-data" class="addoneproductform">
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <strong for="">Categorie</strong>
+                <select class="form-select checkref select2 notempty" required name="pcategory">
+                    <option value=""></option>
+                    {% for i in children %}
+                    <option value="{{i.id}}">
+                        {{i.name}}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-6">
+                <strong>
+                    Marque <span class="fa fa-refresh btn refreshmark"></span>
+                </strong>
+
+                <select class="form-select checkref markssekect select2 notempty" required type="text" name="mark">
+                    <option value=""></option>
+                    {% for i in marks %}
+                    <option value="{{i.id}}">
+                        {{i.name}}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+        </div>
+       <div class="row">
+        <div class="mb-3 row">
+            <b class="text-center text-danger checkerror d-none">
+                Deja existé
+            </b>
+            <div class="col-6">
+                <strong>
+                    Ref.
+                </strong>
+                <input class="form-control checkref notempty" required type="text" name="ref" >
+                <strong>
+                    Marks
+                </strong>
+                <input class="form-control notempty" required type="text" name="marks" >
+            </div>
+            <div class="mb-3 col-md-6">
+                <strong>
+                    Vehicule
+                </strong>
+                <input class="form-control notempty" required type="text" name="car" >
+            </div>
+        </div>
+        <div class="mb-3">
+            <strong for="">
+                Image
+            </strong>
+            <input type="file" class="form-control" name="image">
+        </div>
+       </div>
+
+        
+        <!-- <div class="mb-3">
+            <strong>
+                Article
+            </strong>
+            <input class="form-control" required type="text" name="name" >
+        </div> -->
+        <div class="mb-3">
+            <strong>
+                Fournisseur
+            </strong>
+            <select class="form-select select2 notempty" required type="text" name="originsupp">
+                <option value=""></option>
+                {% for i in suppliers %}
+                <option value="{{i.id}}">
+                    {{i.name}}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <!-- <div class="mb-3">
+            <strong for="">
+                Prix ventes
+            </strong>
+            <input required type="number" class="form-control" name="price" min="0" step="0.01">
+        </div> -->
+        <div class="mb-3 row">
+            <div class="col-6">
+                <strong>
+                    Prix acht
+                </strong>
+                <input type="number" required class="form-control" name="prachat" min="0" step="0.01">
+            </div>
+            <div class="col-6">
+                <strong>
+                    Premium
+                </strong>
+                <select required class="form-control" name="expensive">
+                    <option value="oui">oui</option>
+                    <option value="non" selected>Non</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <div class="col-4" hidden>
+                <strong for="">
+                    Stock
+                </strong>
+                <input class="form-control" type="number" name="stock" min="0">
+            </div>
+            <div class="col-4">
+                <strong for="">
+                    Min stock
+                </strong>
+                <input class="form-control" type="number" name="minstock" min="0">
+            </div>
+            <div class="col-4">
+                <strong for="">
+                    Saisie
+                </strong>
+                <input class="form-control notempty" required type="text" name="entry" autocomplete="off">
+            </div>
+        </div>
+        
+        
+    
+        <button type="submit" class="btn btn-primary addoneproductbtn">Ajouter</button>
+    
+    </form>
+    
+    </div> 
+    <div class="col-3 p-2" >
+        <strong>
+            Ajouter ref origin
+        </strong>
+        <div class="mb-3">
+            <select class="form-select checkref select2 thisnotempty reforigincategory" required name="cc">
+                <option value="">Category</option>
+                {% for i in children %}
+                <option value="{{i.id}}">
+                    {{i.name}}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <input type="text" class="form-control thisnotempty reforigininput" placeholder="REF Marque">
+        <button class="w-100 btn btn-primary mb-3" onclick="addreforigin(event)">Ajouter</button>
+        <input class="form-control searchreforigin search-invoice" placeholder="chercher">
+        <div style="height: 55vh; position: relative; margin-top: 25px; overflow-y: scroll;">
+            <table class="table table-bordered">
+                <thead style="position:sticky; top: 0; background: white;">
+                    <tr>
+                        <th>Categorie</th>
+                        <th>Ref. origin</th>
+                        <th>Supprimer</th>
+                    </tr>
+                </thead>
+                <tbody class="reforigintable">
+                    {% for i in reforigin %}
+                    <tr>
+                        <td>
+                            {{i.category}}
+                        </td>
+                        <td>
+                            {{i.reforigin}}
+                        </td>
+                        <td>
+                            <button class="btn btn-danger" onclick="removereforigin(event, '{{i.id}}')"></button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block scripts %}
+<script>
+    function removereforigin(event, refid){
+        if (confirm('Supprimer')){
+            $.get('/product/removereforigin', {'refid':refid}, (data)=>{
+                $(event.target).parent().parent().remove()
+            })
+        }
+    }
+    function addreforigin(event){
+        reforigincategory=$('.reforigincategory').val()
+        reforigininput=$('.reforigininput').val()
+        $(event.tarhet).attr('disabled', true)
+        // check all fields are filled
+        var isAnyEmpty = $('.thisnotempty').filter(function() { return $(this).val() == ''; }).length > 0;
+        if (isAnyEmpty){
+            let emptyInputs = $('input.thisnotempty').filter(function() {
+                return !this.value.trim();
+            });
+            
+            // Add a red border to all empty input elements
+            emptyInputs.css('border', '1px solid red');
+            $('input.thisnotempty').not(emptyInputs).css('border', '');
+            alert('Veuillez remplir tous les champs obligatoires')
+            $(event.target).attr('disabled', false)
+            return false
+        }
+        $('.alert-success').removeClass('d-none')
+        setTimeout(()=>{$('.alert-success').addClass('d-none')}, 2500)
+        $.get('/product/addreforigin', {'cat':reforigincategory,'ref':reforigininput}, (data)=>{
+            $('.reforigintable').append(`
+            <tr>
+                <td>
+                    ${$(".reforigincategory option:selected").html()}
+                </td>
+                <td>${reforigininput}</td>
+            </tr>
+            `)
+        })
+    }
+    $(document).ready(()=>{
+        $('.checkref').on('change', ()=>{
+            if ($('[name="ref"]').val()!='' && $('[name="pcategory"]').val()!=''){
+                console.log('checking')
+                $.post('/product/checkrefsaisi/', {
+                    'ref': $('[name="ref"]').val().toLowerCase(), 
+                    'csrfmiddlewaretoken': $('[name="csrfmiddlewaretoken"]').val(),
+                    'categoryid':$('[name="pcategory"]').val()
+            }, (data)=>{
+                    if (data.status){
+                        $('.checkerror').removeClass('d-none').addClass('d-flex')
+                        $('.addoneproductbtn').attr('disabled', true)
+                    }
+                    else{
+                        $('.checkerror').removeClass('d-flex').addClass('d-none')
+                        $('.addoneproductbtn').attr('disabled', false)
+                    }
+                })
+            
+            }
+        })
+
+        // $('.addoneproductbtn').on('click', function(){
+        //     $(this).attr('disabled', true)
+        //     // check all fields are filled
+        //     var isAnyEmpty = $('.notempty').filter(function() { return $(this).val() == ''; }).length > 0;
+        //     if (isAnyEmpty){
+        //         let emptyInputs = $('input.notempty').filter(function() {
+        //             return !this.value.trim();
+        //         });
+               
+        //         // Add a red border to all empty input elements
+        //         emptyInputs.css('border', '1px solid red');
+        //         $('input.notempty').not(emptyInputs).css('border', '');
+        //         alert('Veuillez remplir tous les champs obligatoires')
+        //         $(this).attr('disabled', false)
+        //         return false
+        //     }
+        //     $('.addoneproductform').submit()
+        // })
+        
+        $('.refreshmark').on('click', ()=>{
+            $.ajax({
+                url: "{% url 'product:refreshmark' %}",
+                type: "GET",
+                success: (data)=>{
+                    $('.markssekect').html(data.data)
+                }
+            })
+        })
+    })
+</script>
+{% endblock %}

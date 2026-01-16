@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print releve client {{client.customer.name}}</title>
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <script src="/static/js/jquery.min.1.7.js"></script>
+    <script src="/static/js/jquerySpellingNumber.js"></script>
+</head>
+<body>
+    <div class="container-fluid mt-100 mb-100 mt-2">
+        <div id="ui-view">
+          <div class=" d-flex flex-column" id="invoice">
+              <div class="d-flex justify-content-between px-3">
+                <div class="border-end col-6">
+                  <h1 class="underline mt-3">
+                    Nour pieces auto
+                  </h1>
+                  <ul style="font-size: 12px;">
+                    <li>
+                      <strong>PIECES DE RECHANGE</strong>
+                    </li>
+                    <li>
+                      <strong>
+                        HUILES ET LUBRIFIANTS
+                      </strong>
+                    </li>
+                    <li>
+                      <strong>ACCESSOIRES AUTO</strong>
+                    </li>
+                  </ul>
+                  
+                  
+                  
+                </div>
+
+                <div>
+                  <img src="/static/img/logo.jpeg" alt="" width="220" height="120">
+                  <!-- <h2>
+                    Facture
+                  </h2> -->
+                  
+                </div>
+                
+              </div>
+              <div class="d-flex justify-content-between p-2">
+                
+                <div class="col-6 ms-5">
+                  <strong>
+                    Releve Numero {{releve.facture_no}} du client: {{releve.client.customer_name}}
+                  </strong> <br>
+                 
+                </div>
+                
+              </div>
+              <div class="px-5">
+                <p>
+                  Veuillez trouver ci-audessus le detail des factures du periode: DU {{releve.datefrom|date:'d/m/Y'}} AU {{releve.dateto|date:'d/m/Y'}}
+                </p>
+                <table class="table table-bordered text-center" style="border-color: black;" >
+                  <thead style="background: black; color: white; font-size: 14px;">
+                    <tr>
+                      
+                      <th class="center " >Facture N°</th>
+                      <th class="center">Date facture</th>
+                      
+                      <th class="center">Mantant</th>
+                    </tr>
+                  </thead>
+                  <tbody style="font-size: 13px;">
+                    <tr>
+                     
+                      <td class="p-0" >
+                        {% for i in items %}
+                        <strong style="margin-bottom: 5px;">
+                          {{ i.facture.upper}}
+                        </strong><br> 
+                        {% endfor %}
+                      </td>
+                      <td class="p-0" style="height: 125mm;">
+                        {% for i in items %}
+                        <strong style="margin-bottom: 5px;">
+                          {{ i.date|date:'d/m/Y'}}
+                        </strong><br> 
+                        {% endfor %}
+                      </td>
+                      
+
+                      <td class="p-0" >
+                        {% for i in items %}
+                        <strong style="margin-bottom: 5px;" >
+                          {{ i.total|floatformat:2 }}
+                        </strong><br>
+                        {% endfor %} 
+                      </td>
+                    </tr>
+                    
+                    
+                    
+                  
+                  <!-- <tr>
+                      <td colspan="2"></td>
+                      <td>TVA</td>
+                      <td>{{tva}} Dh</td>
+                  </tr>
+                  <tr>
+                      <td colspan="2"></td>
+                      <td>Total TTC</td>
+                      <td>{{totalttc}} Dh</td>
+                  </tr> -->
+                  </tbody>
+                  <tr>
+                    <td colspan="2">Total</td>
+                    <td>{{ releve.total|floatformat:2 }}</td>
+                  </tr>
+                  
+                </table>
+
+              </div>
+              
+              <div class="foooterfacture w-100 p-5 pt-0">
+                <div class="row">
+                  <p class="">
+                    arrêté la presente Relevé à la somme de: <strong class="frenchword text-uppercase"></strong>
+                  </p>
+                  
+                </div>
+                <p>
+                  Dans l’attente de votre prochain règlement, veuillez recevoir, cher client, nos sincères salutations.
+                </p>
+                <p>
+                  Le service comptabilité.
+                </p>
+                <hr>
+                <p class="text-center">
+                  ADRESSE : N° 90 BLOC 4 ROUTE DE BIOUGRA AIT MELOUL <br>
+                  TEL: 0528 24 40 70 /  FAX ; 0528 30 82 84 / PATENTE; 49804975
+                </p>
+                <!-- <div class="d-flex justify-content-between border" style="background: rgb(196, 196, 196); font-size: 12px; margin-top: 3px;">
+                  <div >
+                    Adresse: N° 90 BLOC 4 ROUTE DE BIOUGRA AIT MELLOUL <br>
+                    TEL: 05 28 24 40 70 / 05 28 30 82 84 <br>
+                    EMAIL: NOURPIECESSAUTO@GMAIL.COM <br>
+                    PATENTE: 49804975 <br>
+                    <span class="ice">
+                      ICE: 000506046000081
+                    </span>
+                  </div> 
+
+                  
+                </div> -->
+              </div> 
+          </div>
+            
+        </div>
+    </div>
+</body>
+<script>
+    $('.frenchword').text($.spellingNumber({{releve.total|floatformat:2}}, {
+    lang:'fr',
+    wholesUnit:"Dirhams",
+    fractionUnit:"cents",
+    digitsLengthW2F: 2,
+    decimalSeperator:"et"
+
+    }))
+</script>
+</html>

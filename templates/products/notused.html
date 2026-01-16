@@ -1,0 +1,32 @@
+<!-- {% for item in products %}
+                   
+                    <tr {% if item.commanded %} style="background: yellowgreen; color: black;" {% endif %}>
+                        <td class="product_name">
+                            <div class="badge bg-primary">
+                                {% for i in item.getsimillarscommand %}
+                                La marque: {{i.mark}} => {{i.supplier}}
+                                {% endfor %}
+                            </div><br>
+                            {% if item.command %}<i class="text-success fa fa-check-circle fa-2x"></i>{% endif %}
+                            {% if item.stock == 0 %}<i class="text-danger fa fa-exclamation-circle fa-2x"></i>{% endif %} {{item.ref.upper}} - {{ item.category.name.upper}} - {{ item.car.upper }}
+                        </td>
+                        
+                        <td>{{ item.stock|floatformat:-2 }}</td>
+                        <td>
+                            {{item.qtycommand|floatformat:-2}}
+                        </td>
+                        <td>
+                            {{ item.supplier.name }}
+                        </td>
+                        
+                        <td>
+                            
+                            <button class="btn fa fa-edit fa-2x editcommandebtn" type="button" class="btn btn-success" dataid={{item.id}} data-bs-toggle="modal" data-bs-target="#editcommandemodal"></button>
+                            {% if not item.commanded %}
+                            <i class="fa fa-check text-success fa-2x btn validcommand" data-itemid="{{item.id}}"></i>
+                            {% endif %}
+                            
+                            
+                        </td>
+                    </tr>
+                {% endfor %} -->

@@ -1,0 +1,572 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block menu_sales %}active{% endblock %}
+{% block submenu_create_bill %}active{% endblock %}
+{% block content %}
+	<style>
+        .autocomplete-list {
+      border: 1px solid #ccc;
+      max-height: 150px;
+      overflow-y: auto;
+      position: absolute;
+      background: white;
+      z-index: 1000;
+    }
+    .autocomplete-item {
+      padding: 8px;
+      cursor: pointer;
+    }
+    .autocomplete-item:hover {
+      background: #f0f0f0;
+    }
+		.item-row th {
+			background: #eee;
+		}
+
+		.delete-btn {
+			position: relative;
+		}
+
+		
+	</style>
+
+
+
+
+<div class="row mb-3">
+
+
+    <!-- bon articles -->
+    <div class="shadow rounded p-2 bg-white col-10 position-relative" style="height: 92vh; overflow: scroll;">
+        <div class="w-100" style="position: sticky; top: 0; z-index: 9999;">
+            <h4 class="rounded p-2 text-center text-white" style="background: black;">{{title}}</h4>
+        </div>  
+        <div class="alert alert-danger text-center item-error" style="display: none;" role="alert">
+        </div>
+        vv {{devi.client.customer_name}}
+        <div class="d-flex justify-content-between mt-3">
+                <div>
+                    <strong class="">date:</strong><br>
+                    <input type="date" class="datebon" value="{{ devi.date|date:'Y-m-d' }}">
+                </div>
+                <div>
+                    <select class="form-selsect customer select2" name="customer" id="customer">
+                        <option value="{{devi.client.id}}">
+                            {{devi.client.customer_name}}
+                        </option>
+                        {% for customer in customers %}
+                            <option value="{{ customer.id }}">{{ customer.customer_name }}</option>
+                        {% endfor %}
+                    </select><br>
+                    <!-- <button type="button" class="btn btn-success addoneproduct" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        + Client
+                    </button> -->
+                </div>
+                
+            
+        </div>
+        <hr>
+        <div class="accordion" id="accordionExample" hidden>
+            
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  +Articles
+                </button>
+              </h2>
+              <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                <div class="accordion-body bg-white">
+                    <div class="bg-white">
+                      <div class="mb-3 row p-2 rounded" style="background:rgb(34, 25, 71);">
+                        <div class="col-2 ">
+                            <input class="form-control bc " name="bc" placeholder="N° Bon commande" autocomplete="on">
+                        </div>
+                        <div class="col-2 ">
+                            <input class="form-control bl " name="bl" placeholder="N° Bon Livraison" autocomplete="on">
+                        </div>
+                        <div class="itemsselectholder col-3">
+                            <input class="form-control article" name="article" placeholder="Article" id="autocomplete-input">
+                            <div id="autocomplete-container"></div>
+                        </div>
+                        <div class="col-1">
+                                    
+                            <input type="number" class="addqtyinp form-control" placeholder="Qty">
+                            <div class="addstock text-white"></div>
+                        </div>
+                        <div class="col-1">
+                            
+                            <input type="number" class="addpriceinp form-control" placeholder="Prix">
+                            <div class="addprice text-white"></div>
+                        </div>
+                        <div class="col-2 ">
+                            <input class="form-control mtrc " name="mtrc" placeholder="N° imtrc" autocomplete="on">
+                        </div>
+                        <div class="col-1">
+            
+                            <button class="btn btn-primary w-100" onclick="addrow()">+</button>
+                        </div>
+                        <input type="text" class="addname" hidden>
+                    </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        <div id="item-data-sc" class="table-responsive item-data-sc table-hover">
+            <table class="table table-bordered">
+                <thead>
+                <tr class="">
+                    <th style="width: 35%;">Article</th>
+                    <th>Prix ventes</th>
+                    <th>Quantité</th>
+                    <th>Total</th>
+                   
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody class="itemsbon">
+                {% for i in items %}
+                <tr class="item-row">
+                    <td id="item-name" class="item-name">
+                        <input
+                        style="width: 100%;" 
+                        class="invoice-item"
+                        type="text"
+                        value="{{ i.article }}"
+                        onkeyup="autocompletename(event)"
+                        >
+                    </td>
+                    <td>
+                      <input 
+                        onkeyup="calculatebon(event)"
+                        min="0" 
+                        value="{{ i.price }}" 
+                        class="form-control price" 
+                        prices="[{{ i.total }}]" 
+                        placeholder="Price" 
+                        type="number" 
+                      >
+                      <br>
+                      <span class="text-danger errorprice d-none bg-white">Prix</span>
+                    </td>
+                    <td>
+                      <input 
+                        onkeyup="calculatebon(event)"
+                        class="form-control qty" 
+                        placeholder="Quantity" 
+                        type="number"
+                        min="1" 
+                        value="{{ i.qty }}" 
+                      >
+                    </td>
+                    <td class="total">{{ i.total }}</td>
+                    
+                    <td>
+                        <button onclick="addrowup(event)" class="fa fa-arrow-up btn btn-sm"></button>
+
+                        <i class="btn btn-danger delete" 
+                        title="Supprimer" 
+                        onclick="removeline(event)"
+                        >SUPPRIMER</i>
+
+                        <button onclick="addrowdown(event)" class="fa fa-arrow-down btn btn-sm"></button>
+                    </td>
+                  </tr>
+                  
+                {% endfor %}
+                </tbody>
+            </table>
+            
+
+        </div>
+    </div>
+
+
+    <!-- bon billing -->
+    <div class="col-2" style="right:0; ">
+
+        <div class="shadow bg-white p-2 rounded">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tbody>
+                    <tr hidden>
+                        <td></td>
+                        <td></td>
+                        <td class="text-right"><strong>Sub Total</strong></td>
+                        <td><span id="subtotal">0.00</span></td>
+                    </tr>
+                    <tr hidden>
+                        <td></td>
+                        <td></td>
+                        <td class="text-right"><strong>Discount</strong></td>
+                        <td><input autocomplete="off" class="form-control" id="discount" value="0" type="text"></td>
+                    </tr>
+                    <tr hidden>
+                        <td></td>
+                        <td></td>
+                        <td class="text-right"><strong>Shipping</strong></td>
+                        <td><input autocomplete="off" class="form-control" id="shipping" value="0" type="text"></td>
+                    </tr>
+                    <tr>
+                        <!-- <td><strong>Total Qty: </strong><span id="totalQty" style="color: red; font-weight: bold">0</span></td> -->
+                        
+                        <td class="text-right"><strong>Total</strong></td>
+                        <td><span id="grandTotal" style="color:red">{{devi.total}}</span></td>
+                    </tr>
+                    <tr hidden>
+                        <td class="text-right"><strong>Payé</strong></td>
+                        <td><input autocomplete="off" class="form-control" id="paidAmount" value="0" type="number"></td>
+                    </tr>
+                    <tr hidden>
+                        <td class="text-right"><strong>Rest</strong></td>
+                        <td><span id="remainingAmount">0</span></td>
+                    </tr>
+                    
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between">
+                <!-- <button class="btn btn-primary paid">
+                    Payé
+                </button> -->
+                <a style="font-size: large" id="create-invoice" href="javascript:;" title="Create Invoice" class="btn btn-primary pull-right" id="load" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing Order">Valider</a>
+            </div>
+        </div>
+        <div class="autocomplete-container d-none bg-white p-2 rounded mt-2"></div>
+    </div>
+
+
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    
+    <script>
+        
+        function addrowup(event){
+            const newRow = `
+            <tr class="item-row">
+                    <td id="item-name" class="item-name">
+                        <input style="width: 100%;" class="invoice-item" type="text" value="" onkeyup="autocompletename(event)" >
+                    </td>
+                    <td>
+                      <input onkeyup="calculatebon(event)" min="0" value="" class="form-control price" placeholder="Price" type="number">
+                      <br>
+                      <span class="text-danger errorprice d-none bg-white">Prix</span>
+                    </td>
+                    <td>
+                      <input onkeyup="calculatebon(event)" class="form-control qty" placeholder="Quantity" type="number" min="1" value="">
+                    </td>
+                    <td class="total">00.00</td>
+                    
+                    <td>
+                        <button onclick="addrowup(event)" class="fa fa-arrow-up btn btn-sm"></button>
+
+                        <i class="btn btn-danger delete" title="Supprimer" onclick="removeline(event)">SUPPRIMER</i>
+
+                        <button onclick="addrowdown(event)" class="fa fa-arrow-down btn btn-sm"></button>
+                    </td>
+                </tr>`;
+            $(event.target).closest('tr').before(newRow); // Insert the new row above the current row
+        }
+        function addrowdown(event){
+            const newRow = `
+                <tr class="item-row">
+                    <td id="item-name" class="item-name">
+                        <input style="width: 100%;" class="invoice-item" type="text" value="" onkeyup="autocompletename(event)">
+                    </td>
+                    <td>
+                      <input onkeyup="calculatebon(event)" min="0" value="" class="form-control price" placeholder="Price" type="number">
+                      <br>
+                      <span class="text-danger errorprice d-none bg-white">Prix</span>
+                    </td>
+                    <td>
+                      <input onkeyup="calculatebon(event)" class="form-control qty" placeholder="Quantity" type="number" min="1" value="">
+                    </td>
+                    <td class="total">00.00</td>
+                    
+                    <td>
+                        <button onclick="addrowup(event)" class="fa fa-arrow-up btn btn-sm"></button>
+
+                        <i class="btn btn-danger delete" title="Supprimer" onclick="removeline(event)">SUPPRIMER</i>
+
+                        <button onclick="addrowdown(event)" class="fa fa-arrow-down btn btn-sm"></button>
+                    </td>
+                </tr>`;
+            $(event.target).closest('tr').after(newRow); // Insert the new row above the current row
+        }
+        
+        function calculatebon(event){
+            // qty=$(event.target).parent().find('.qty').val()
+            // price=$(event.target).parent().find('.price').val()
+            // tdtotal=$(event.target).parent().find('.total')
+            // total=parseFloat(qty)*parseFloat(price)
+            // tdtotal.text(total)
+            // totals=$('.total')
+            const row = $(event.target).closest('tr');
+            
+            // Retrieve quantity and price values
+            const qty = parseFloat(row.find('.qty').val()) || 0; // Default to 0 if value is invalid
+            const price = parseFloat(row.find('.price').val()) || 0; // Default to 0 if value is invalid
+            
+            // Calculate the total
+            const total = qty * price;
+
+            // Update the total cell in the current row
+            row.find('.total').text(total.toFixed(2));
+
+            // Optionally, recalculate and update the grand total for all rows
+            let grandTotal = 0;
+            $('.total').each(function () {
+                const rowTotal = parseFloat($(this).text()) || 0;
+                grandTotal += rowTotal;
+            });
+
+            // Update the grand total somewhere in the DOM (e.g., a footer cell)
+            $('#grandTotal').text(grandTotal.toFixed(2));
+
+        }
+        //const suggestions = ["CLAXSON", "TEMBEUR", "LAJOGE HUIL", "SIRVO EMB", "GUID TIGE VITASS", "BRA COMPLEMENT", "PLACA", "EQUILIBREUR LICULIBLOR", "RONDIL INJECTEUR", "POMPE AMORSAGE VANTOZ", "BAG DIRECTION", "STOP MOTOR VANTOZ", "MANO POMPE GASOIL", "CARCAS FILTER HUIL COMPLET", "PAPION", "RMANA", "LAMPE", "TUBE DE HUIL TURBO", "TEYO VASSE DEAU", "CAPTEU AIR PNEU", "AMBRACAM", "ROULMENT DEMARRORE", "ROULMENT DEMARRORE", "ROULMENT DEMARRORE", "ROULMENT DEMARRORE", "JOINT FILTER BV", "CLAPI EMBRYAGE", "SUPPORT BAR SOCOSS", "MANO FREIN", "DURITE CHOUFFAGE", "JOINT CELCETOURES", "VANTOUZE TURBO", "ROULMENT TENDEUR", "ROULMENT CLIMA", "ROULMENT MANCHO", "Radiateur, réaspiration des gaz d'échappement", "ATACH POMPE EMB", "HUIL BV", "AMORTISSEUR CAPOT", "N/C VITASS", "PORTE CHARBON", "AMORTISSEUR DIRECTION", "NEFLOR", "CARE CASSE POMPE EAU", "AGRAF CACHE MOTOR", "FIXIBLE EMBRYAGE", "BUTTE SUSPONSOIN AR", "FIXIBLE FRIEN", "BAG BIELL", "OPTIQUE", "LATRESSE CARTER", "FIXIBLE DINAMO", "CARE CASSE FILTER AIR", "TEMPERATUER", "ROULMENT AMORTISEUR", "VENTILATEUR", "CRIBEN POMPE DE HUIL", "N/C DEMARREUR", "MANO CLIM", "TUYAU POMPE EMBARYAGE", "MANO FILTER GASOIL", "KIT ROULMENT", "JOINT ADMITION", "JOINT PLACA", "FREDOIT", "FEUX ARRIRE", "MANO CARTER", "CARTER", "BAGUE FOURCHETTE", "bouchon de huile moteur", "CARCAS FILTER HUIL SEMPEL KHAWI", "LIVALVE INJECTEUR", "MANO ARANTI", "TUBE EAU", "cache amortisseur", "MANO STOP", "JOINT CHEMISE", "CROISILON DIRICTION", "CHEMISE", "AMORTISSEUR TENDEUR", "AX PIVO", "CARCAS AIR TURBO", "PINIO CHAIN", "COUP COURANT", "BAG AMBRACAM", "LAJOGE GASIO", "MANO ARRIERE", "ATACHE CABLE EMBRYAG", "Résistons", "AMORTISSEUR MALLA", "REPARTITEUR FRIEN", "FILL BOUGE", "CABLE VETASSE", "GLESIR", "COMONDO ELECTRIQUE", "BOTON GLASSE", "ROULMENT CARDANT", "DURIT NEFLOUR", "PISTON POMPE AGASIOL", "CABLE ACC", "SUPPORT ECHAPPEMENT", "DURITE AIR", "AX POMPE HUIL", "IDWA", "BOCHON RADIATEUR", "Couvert cache soupape", "GOUPELL DE RUE", "CAPTEUR ABS", "TURBO", "POUSSOIR ED SOUPAPE", "PINIO CONTEUR", "BOUCHON VASSE DENT MOTOR", "DIMAROR", "DIBIMTER", "MOTOR VASE DE", "POMPE ESSNCE", "POINI", "PORT BUTTE", "MANCHO ESEAU", "JOINT POMPE HUIL", "FLECTOR DIRECTION", "N/C INJECTEUR", "VAN EGR", "POMPE GASOIL", "FICHE CONTACT", "ALTIRNATEUR", "CLIMAIRE DIRECTION", "ROULMENT ALTIRNATEUR", "SOUFFLET CARDENT", "ROULMENT B.V", "SPIRAL", "JOINT REFRIGERANT D HUILE", "CAL ATERAL", "JAUGE DE HUILE", "COLECTEUR", "FILTER ESSENCE", "N/C LIESEU ARRIERE", "FILTER B.V", "POMPE OXILER", "INJECTEUR", "BOUGIE PRECHAUFFAGE", "C/P", "MANO HUIL", "CHARBON", "N/C EMBRYAGE", "GUIDE SOUPAPE", "CAOUATCHO CLEMAILLERE", "TETE POMPE GASOIL", "COUPLEUR", "JOINT CARTER", "FLECTEUR CARDENT", "POULIE EMB ALTERNATEUR", "BOUGIE ALLUMAGE ESSANCE", "SUPPORT CARDENT", "MANO COMORAI", "INDUI DEMAROR", "AX FISI", "RELAIS DIMAROR", "CROISILLON CARDAN", "BOTON FRIEN AMAN", "GUIDE LAJOJE HUIL", "VASE DE HUILE", "BIDALLE EMB", "TUBE RETOUR", "TRIANGLE", "POMPE HUIL", "PIVO", "CULBUTEUR", "REGULATEUR", "BOCHON FILTER HUIL", "TETE FILTER GASOIL", "POULIE VILBROCAL", "CAPTEUR", "CABLE FRIEN", "KIT DISTRUBITION", "ARRETE HUIL INJECTEUR", "DISQUE EBMRYAGE", "MANO TEMPERATURE", "ARRET HUIL DEVER", "ROTROVISEUR", "CABLE CONTEUR", "POMPE ASSISTÉE", "PORCHETTE JOINT", "SOUPAPE", "KIT EMBRYAGE", "REGULATEUR TURBO", "VOLLANT MOTOR", "CHAINE DISTRIBUTION", "CARDANT", "DURITE EAU", "CABLE EMBRYAGE", "PLATEAU EMBRYAGE", "FOURCHETTE EMBRYAGE", "VASE DE EAU MOTOR", "TETE CARDAN", "COURROIE ALTIRNATEUR", "TEMOIN DE PLAQUETTE", "PIPE EAU THERMOSTAT", "CHAPPE DIRECTION", "BUTTE EMBRYAGE", "TIGE VITASSE", "MOYAU", "BOBINE D ALLUMAGE", "POMPE EAU", "REFRIGERANT d'huile", "bras suspension", "DURITE TURBO", "ARRET D HUILE SOUPAPE", "ROULMENT", "SILENTBLOC", "POMPE EMB", "SUPPORT MOTOR", "BENDEX", "TENDEUR", "BIELLETTE DIRECTION", "PISTON", "FILTER CLIM", "FILTER GASOIL", "FILTER AIR", "JOINT CACHE SOUPAPE", "SEGMENT", "JOINT CULASSE", "FILTER HUILE", "C/B", "SOUFLET DIRECTION", "ROTULE", "SUPPORT AMORTISSEUR", "AMORTISSEUR", "CAOUATCHO BAR SOCOS", "BIELLETTE STABILISATRICE", "N/C FREIN", "POMPE FREIN", "CYLINDEI DE FREIN", "DISQUE FREIN", "PLAQUETTE DE FREIN"]
+
+        const input = document.getElementById('autocomplete-input');
+        const container = document.getElementById('autocomplete-container');
+
+        // input.addEventListener('input', () => {
+        // const query = input.value.toLowerCase();
+        // container.innerHTML = '';
+
+        // if (query) {
+        //     //const filtered = suggestions.filter(item => item.toLowerCase().startsWith(query));
+
+        //     filtered.forEach(item => {
+        //     const div = document.createElement('div');
+        //     div.textContent = item;
+        //     div.classList.add('autocomplete-item');
+        //     div.addEventListener('click', () => {
+        //         input.value = item;
+        //         container.innerHTML = '';
+        //     });
+        //     container.appendChild(div);
+        //     });
+        // }
+        // });
+
+        document.addEventListener('click', (e) => {
+        if (!container.contains(e.target) && e.target !== input) {
+            container.innerHTML = '';
+        }
+        });
+        function removeline(event){
+            $(event.target).closest('tr').remove();
+            total=parseFloat($(event.target).closest('tr').find('.total').text())
+            oldtotal=parseFloat($('#grandTotal').text())
+            $('#grandTotal').text((oldtotal-total).toFixed(2))
+            
+            
+        }
+        function addrow(){
+            
+            parentdiv=$(this).parent().parent()
+            
+            
+             // first time adding to localstorg
+            qtyinpadd=$('.addqtyinp').val()
+            priceinpadd=$('.addpriceinp').val()
+            article=$('.article').val()
+            bc=$('.bc').val()
+            bl=$('.bl').val()
+            mtrc=$('.mtrc').val()
+            if (article=='' || priceinpadd=='' || qtyinpadd==''){
+                alertify.error('Champs vide')
+                return
+            }
+          
+            
+            
+        //   if (pdcts.includes(id)){
+        //     console.log('in locals')
+        //     dx=pdcts.indexOf(id)
+            
+        //     // get index of id
+            
+            
+        //     bonitems[dx].qty=parseInt(bonitems[dx].qty)+1
+        //     pricesfromlocalstorage=bonitems[dx].prices
+        //     pricesfromlocalstorage.push((parseInt(qtyinpadd)*parseFloat(priceinpadd)).toFixed(2))
+        //     bonitems[dx].prices=pricesfromlocalstorage
+        //     // insert it in index to remain the same order, order is important here
+        //     localStorage.setItem('bonitems',JSON.stringify(bonitems))
+           
+        //     let qtyinput=$(`#itemrow${id}`).find('.qty')
+        //     let total=$(`#itemrow${id}`).find('.total')
+        //     let price=$(`#itemrow${id}`).find('.price')
+        //     // to calculate ponire we need to store the qtys*prices
+        //     prices=JSON.parse(price.attr('prices'))
+        //     prices.push((parseInt(qtyinpadd)*parseFloat(priceinpadd)).toFixed(2))
+        //     sum=0
+        //     for (i of prices){
+        //         sum+=i
+        //     }
+        //     newqty=parseInt(qtyinput.val())+parseInt(qtyinpadd)
+        //     pondir=sum/newqty
+        //     qtyinput.val(newqty)
+        //     price.val(pondir)
+        //     total.text(sum)
+        //     $(`#itemrow${id}`).css('background', 'greenyellow')
+        //     setTimeout(() => {
+        //         $(`#itemrow${id}`).css('background', 'none')
+        //     }, 2500);
+        //     jQuery().invoice().init
+
+        //     return
+        //   }
+        $('.itemsbon').prepend(`<tr class="item-row"><td id="item-name" class="item-name"><input style="width: 100%;" class="invoice-item" type="text" value="${article}"></td><td><input min=0 value=${priceinpadd} class="form-control price" prices="[${(qtyinpadd*priceinpadd).toFixed(2)}]" placeholder="Price" type="number" ><br><span class="text-danger errorprice d-none bg-white">Prix </span> </td><td><input class="form-control qty" placeholder="Quantity" type="number" min=1 value=${qtyinpadd} ></td><td class="total">${(qtyinpadd*priceinpadd).toFixed(2)}</td><td><i class="btn btn-danger delete" title="Supprimer" onclick="removeline(event)"></i></td></tr>`);
+        oldtotal=parseFloat($('#grandTotal').text())
+        total=(qtyinpadd*priceinpadd).toFixed(2)
+       $('#grandTotal').text(oldtotal+parseFloat(total))
+        $('.article').focus()
+        $('.article').val('')
+        $('.addqtyinp').val('')
+        $('.bc').val('')
+        $('.bl').val('')
+        $('.mtrc').val('')
+        $('.addpriceinp').val('')
+        $('.addstock').text('')
+        $('.addprice').text('')
+        
+        // emptying the fields
+        
+
+    }
+        
+        // set products in local storage
+        // remove prdcts localstorage when valider
+        
+        
+    $(document).ready(function () {
+        function showerror(m){
+            $('.item-error').show().text(m)
+        }
+        // add client
+        $('.addclientbtn').on('click', ()=>{
+            if($('.customer').val() == ''|| $('.customer_phone').val()==''){
+                console.log('error')
+                $('.customererror').show();
+                return false;
+            }else{
+                $('.addclientbtn').addClass('disabled')
+                $.post(
+                    '{% url "product:addclient" %}',
+                    {
+                        'name':$('.customer').val(),
+                        'phone':$('.customer_phone').val(),
+                        'ice':$('.customer_ice').val(),
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    function(data){
+                        location.reload();
+                    }
+                )
+            }
+        })
+
+        
+        
+        
+
+
+        $('.paid').on('click', ()=>{
+            let total=$('#grandTotal').text()
+            // assign total to received
+            $('#paidAmount').val(total)
+        })
+
+        $('.btn-primary').on('click', function () {
+            $('.item-error').hide();
+        });
+    });
+    </script>
+    <script>
+        $('#create-invoice').on('click', function() {
+            let customer=$('#customer').val()
+            let items=[]
+            let total=$('#grandTotal').text()
+            let date=$('.datebon').val()
+            itemrows=$('.item-row').toArray();
+            if (itemrows.length==0){
+                alertify.error('Ajouter des articles')
+                return
+            }
+            for (i of itemrows){
+                article=$(i).find('.invoice-item').val()
+                itemtotal=$(i).find('.total').text()
+                price=$(i).find('.price').val()
+                qty=$(i).find('.qty').val()
+                item={
+                    'article':article,
+                    'total':itemtotal,
+                    'price':price,
+                    'qty':qty,
+                    
+                }
+                items.push(item)
+            }
+            if (customer==0){
+                alertify.error('Client obligatoire')
+                return
+            }
+            if (date==''){
+                alertify.error('Date obligatoire')
+                return 
+            }
+            if (total==0){
+                alertify.error('ERR 404')
+                return
+            }
+            $(this).button('loading');
+            console.log(items)
+            $.post(
+                '{% url "product:updatedevi" %}',
+                {
+                    'customer':customer,
+                    'items':JSON.stringify(items),
+                    'total':total,
+                    'date':date,
+                    'deviid':'{{devi.id}}',
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                function(data){
+                    if (data.error){
+                        alertify.error(data.error)
+                        $('#create-invoice').button('reset');
+                    }
+                    else{
+                        alertify.success('Devi modifier')
+                        
+                        location.href='/product/listdevises'
+                    }
+                }
+            )
+        });
+
+        // $('.form-control').click (function () {
+        //     $('.list-error').hide();
+        //     checkDec(this);
+
+        // });
+
+        // function checkDec(el){
+        //     var ex = /^[0-9]+\.?[0-9]*$/;
+        //     if(ex.test(el.value)==false){
+        //         el.value = el.value.substring(0,el.value.length - 1);
+        //     }
+        // }
+    </script>
+{% endblock %}

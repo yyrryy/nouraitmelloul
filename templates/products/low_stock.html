@@ -1,0 +1,124 @@
+<select>
+    <option value=""></option>
+    {% for i in marks %}
+    <option value="{{i.id}}">
+        {{i.name}}
+    </option>
+    {% endfor %}
+</select>
+{% for item in products %}
+<!-- <tr style="{%if item.disponibleinother%} background:#59aeeb; color: black;{% elif not item.rcommand %}background:#ffbb56; color: black;{%endif%}{%if item.commanded%} background:greenyellow; color: black;{%endif%}{%if item.expensive%} background:red; color: black;{%endif%}"> -->
+    <tr style="background: {% if item.commanded %} yellowgreen;{%endif%}" >
+                        <td>
+                            {% if item.image %}
+                                <button data-bs-toggle="modal" data-bs-target="#imagedisplaymodal" class="imagedisplaybtn" onclick="imagedisplaybtn(event)">
+                                    <img src="{{ item.image.url }}" class="imgproduct" alt="{{ item.name }}" height="50px" width="50px">
+                                </button>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>
+                                {{item.mark.name.upper}}
+                            </strong>
+                        </td>
+                        <td class="ref">
+                            <b>
+                                {{item.ref.upper}}
+                            </b>
+                            {% if not item.urgent and noturgent %}
+                                <button class="btn btn-primary" onclick="makeurgent({{item.id}})">
+                                    Urgent
+                                </button>
+                            {% endif %}
+                        </td>
+                        <td class="category">
+                              
+                            {% if item.command %}<i class="text-success fa fa-check-circle fa-2x"></i>{% endif %}
+                            {% if item.stock == 0 %}<i class="text-danger fa fa-exclamation-circle fa-2x"></i>{% endif %}  <b>{{ item.category.name.upper}}</b>
+                            
+                        </td>
+                        <td class="car">
+                            <b>
+                                {{ item.car.upper }}
+                            </b>
+                        </td>
+                        <!-- <td class="#">{{ item.unit_type }}</td> -->
+                        <td>{{ item.originsupp.name }}</td>
+                        
+                            {% if item.command %}
+                            <td>
+                                {%if item.disponibleinother %}
+                                {% for i in item.getsimillars %}
+                                    <strong class="bg-danger">
+                                        ({{i.mark}}, {{i.stock|floatformat:-2}})
+                                    </strong>
+                                {% endfor %}
+                                    <br>
+                                    {% if not item.commanded %}
+                                    <button class="fa fa-check text-success fa-2x" onclick="makeitemcommanded(event, '{{item.id}}')"></button> 
+                                    {% endif %}
+                                    <button class="btn fa fa-times text-danger border" type="button" class="btn btn-success" dataid={{item.id}} onclick="cancelcmndnlow(event, '{{item.id}}', '{{item.category.id}}')"></button> {{item.supplier.name}}
+                                {% else %}
+                                 {% if not item.commanded %}                                                           
+                                <button class="fa fa-check text-success fa-2x" onclick="makeitemcommanded(event, '{{item.id}}')"></button> 
+                                {% endif %}
+                                <button class="btn fa fa-times text-danger border" type="button" class="btn btn-success" dataid={{item.id}} onclick="cancelcmndnlow(event, '{{item.id}}', '{{item.category.id}}')"></button> {{item.supplier.name}}
+                                {% endif %}
+                                <div class="badge bg-danger">
+                                    {% for i in item.getsimillarscommand %}
+                                    {{i.mark}} => {{i.supplier}}<br>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            {% elif item.disponibleinother %}
+                            <td>
+                                {% for i in item.getsimillars %}
+                                    <strong class="bg-danger">
+                                        ({{i.mark}}, {{i.stock|floatformat:-2}})
+                                    </strong>
+                                {% endfor %}
+                                    <div class="">
+                                        <input disabled placeholder="Quantité" type="number" class="form-control qtycommand " data-id="{{item.id}}" data-categoryid="{{item.category.id}}" onchange="commandinputinlow(event)">
+                                    </div>
+                                    <div class="badge bg-danger">
+                                        {% for i in item.getsimillarscommand %}
+                                        {{i.mark}} => {{i.supplier}}<br>
+                                        {% endfor %}
+                                    </div>
+                            </td>
+                            {% elif not item.rcommand %}
+                            <td class="">
+                            
+                                <div class="">
+                                    <input disabled placeholder="Quantité" type="number" class="form-control qtycommand " data-id="{{item.id}}" data-categoryid="{{item.category.id}}" onchange="commandinputinlow(event)">
+                                    <div class="badge bg-danger">
+                                        {% for i in item.getsimillarscommand %}
+                                        {{i.mark}} => {{i.supplier}}<br>
+                                        {% endfor %}
+                                    </div>
+                                   
+                                </div>
+                               
+                            </td>
+                            {% else %}
+                            <td>
+                            <div class="">
+                                <input disabled placeholder="Quantité" type="number" class="form-control qtycommand " data-id="{{item.id}}" data-categoryid="{{item.category.id}}" onchange="commandinputinlow(event)">
+                                <div class="badge bg-danger">
+                                    {% for i in item.getsimillarscommand %}
+                                    {{i.mark}} => {{i.supplier}}<br>
+                                    {% endfor %}
+                                </div>
+                               
+                            </div>
+                            </td>
+                            {% endif %}
+                            <!-- delete item is commented for now cause of the factorizaation -->
+                            <!-- <button class="btn btn-danger btn-xs deleteproduct" title="Supprimer" data-id="{{item.id}}"><i class="fa fa-trash-o"></i></button> -->
+   
+                            <!-- old code
+                            <a href=''product:add_product_items' product_id=item.id %}"><button class="btn btn-primary btn-xs">الدخول</button></a>
+                            <a href=''product:item_details' pk=item.id %}"><button class="btn btn-success btn-xs"><i class="fa fa-eye"></i></button></a>-->
+                        </td>
+    </tr>
+{% endfor %}

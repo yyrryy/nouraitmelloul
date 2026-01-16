@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonsortie_{{inv.id}}</title>
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+
+</head>
+<body>
+  <div class="d-flex justify-content-between bg-dark" style="position: sticky; top: 0;">
+    <a class="btn btn-sm btn-info" href="/sales/invoice/list/">
+      <i class="fa fa-arrow-left mr-1"></i> Retour </a>
+      <!-- <a class="btn btn-sm btn-info" href="#" data-abc="true" onclick="PrintInvoice('invoice')">
+        <i class="fa fa-print mr-1"></i> Print </a> -->
+      
+      
+    </div>
+    
+    <div class="container-fluid mt-100 mb-100">
+        <div id="ui-view">
+          <div class="" id="invoice">
+            
+              <!-- <div class="card-header d-flex justify-content-between">
+                <div>
+                  <img src="/static/img/logo.jpeg" alt="" width="100" height="100">
+                <div>
+                  <h1>Nour Pieces auto</h1>
+                </div>
+                </div>
+                <div>
+                  Client: 
+                <strong>{{ inv.customer.customer_name.upper }}.</strong>
+              </div>
+              </div>
+              <div class="d-flex justify-content-between">
+                
+                <p>
+                  Bon sortie <strong>#{{inv.receipt_no}}</strong>
+              </p>
+              <p>
+                  {{inv.date|date:'d/m/Y'}}
+              </p>
+              
+              </div> -->
+              <div class="card-body">
+                <div class="d-flex mb-4 justify-content-between">
+                  
+                  <div class="">
+                  </div>
+                </div>
+                <div class="table-responsive-sm text-center">
+                  <table class="table table-bordered table-hover">
+                    <thead>
+                      <tr>
+                        <th>Image</th>
+                        <th>Article</th>
+                        <th>Mark</th>
+                        <th>Stock</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in items %}
+                      <tr>
+                        <td>
+                          {% if i.product.image %}
+                          <button data-bs-toggle="modal" data-bs-target="#imagedisplaymodal" class="imagedisplaybtn">
+                              <img src="{{ i.product.image.url }}" class="imgproduct" alt="{{ i.product.name }}" height="50px" width="50px">
+                          </button>
+                          {% endif %}
+                        </td>
+                        <td class="text-start">{{i.product.ref}} - {{i.product.category.name}} - {{i.product.car}}</td>
+                        <td class="text-start">{{i.product.mark}}</td>
+                        <td class="mark text-center bg-{% if i.product.stock == 0 %}danger{% endif %}" markid="{{item.mark.id}}" >
+                          {% for b in i.product.getsimillars %}
+                            <strong style="background: yellowgreen;">
+                                ({{b.mark}}, {{b.stock|floatformat:-2}})
+                            </strong> <br>
+                          {% endfor %}
+                          {{i.product.stock|floatformat:-2}}
+                        </td>
+                        <td >
+                          {% if not i.product.urgent %}
+                          <i class="btn btn-success" onclick="makeurgentincontoir(event, '{{i.product.id}}')">urgent</i>
+                          {% endif %}
+                        </td>
+                      </tr>
+                      {% endfor %}
+                      
+                    
+                </tr>
+                    
+                    </tbody>
+                  </table>
+                </div>
+                
+              </div>
+            
+            
+          </div>
+        </div>
+      </div>
+</body>
+<script src="{% static 'js/jquery.min.1.7.js'%}"></script>
+
+<script>
+  function makeurgentincontoir(event, id){
+    $.post('/product/makeurgent', {'id':id, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, (data)=>{
+      $(event.target).remove()
+    })
+  }
+    function PrintInvoice(divName){
+         var printContents = document.getElementById(divName).innerHTML;
+         var originalContents = document.body.innerHTML;
+         document.body.innerHTML = printContents;
+         $('body').css('font-size', '12px')
+         $('.head').addClass('')
+         $("table > thead > tr > th").css('padding', '0px');
+         $("table > tbody > tr > td").css('padding', '0px');
+         $('body').addClass('d-flex flex-column vh-100 p-3')
+         $('.foooterfacture').addClass('mt-auto');
+         window.print();
+         document.body.innerHTML = originalContents;
+    }
+</script>
+</html>

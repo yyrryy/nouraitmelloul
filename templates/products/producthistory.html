@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% block submenu_add_product %}active{% endblock %}
+{% block menu_product %}active{% endblock %}
+{% load template_tags %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-3">
+        <div class="bg-white rounded shadow p-2">
+            {% if product.image %}
+            <img src="{{product.image.url}}" class="w-100">
+            {% endif %}
+            {% if product.expensive %}
+            <strong>
+                <i class="fa fa-dollar"></i><i class="fa fa-dollar"></i><i class="fa fa-dollar"></i><i class="fa fa-dollar"></i>
+            </strong>
+            {% endif %}
+            <table class="table table-bordered table-striped">
+                <tbody>
+                    <tr>
+                        <th>SAISIE</th>
+                        <th>{{product.entry}}</th>
+                    </tr>
+                    <tr>
+                        <th>REF</th>
+                        <th>{{product.ref.upper}}</th>
+                    </tr>
+                    <tr>
+                        <th>Category</th>
+                        <th>{{product.category.name.upper}}</th>
+                    </tr>
+                    <tr>
+                        <th>Vehicule</th>
+                        <th>{{product.car.upper}}</th>
+                    </tr>
+                    <tr>
+                        <th>Fourn.</th>
+                        <th>{{product.originsupp.name.upper}}</th>
+                    </tr>
+                    <tr>
+                        <th>Marque</th>
+                        <th>{{product.mark.name.upper}}</th>
+                    </tr>
+                    <tr>
+                        <th>Entrées</th>
+                        <th>{{totalin}}</th>
+                    </tr>
+                    <tr>
+                        <th>Sorties</th>
+                        <th>{{totalout}}</th>
+                    </tr>
+                    <tr>
+                        <th>Stock</th>
+                        <th>{{product.stock}}</th>
+                    </tr>
+                    <tr>
+                        <th>Cout</th>
+                        <th>{{product.pr_achat}} DH</th>
+                    </tr>
+                    <tr>
+                        <th>% vents</th>
+                        <th>{{percentage}}</th>
+                    </tr>
+                    
+                </tbody>
+            </table>
+            <img src="product/generate-barcode/{{product.barcode}}/" alt="Barcode" style="width: 100%;">
+            <input type="number" placeholder="Prix" class="form-control codebarprice">
+            <!-- <input type="number" placeholder="qty" class="form-control codebarqty"> -->
+            <button class="btn btn-primary w-100" onclick="printcodebar(event, '{{product.id}}')">Imprimer</button>
+            <form action="{% url 'product:deleteproduct' %}" class="mt-5" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{product.id}}">
+            <input type="password" class="form-control border-danger" name="password">
+            <button class="btn btn-danger w-100">
+                Supprimer
+            </button>
+           </form>
+        </div>
+    </div>
+
+    <div class="col-9 row">
+        <div class="col-6">
+            <div class="bg-white rounded shadow">
+                <h4 class="p-2 rounded text-white bg-success shadow text-center">
+                    <strong>
+                        Entrée
+                    </strong >
+                </h4>
+                <!-- <table class="table table-striped table-advance table-hover item-table table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="text-center">Total entrées</th>
+           
+                        <th class="text-center">
+                            Total costs
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody class="product-table-body text-center">
+                        <tr>
+                            <td>{{totalin}}</td>
+           
+                            <td class="totalcost">{{totalcost}}</td>
+                           
+                        </tr>
+                    </tbody>
+                    </table> -->
+                    <div class="p-2" style="background: rgb(190 255 162 / 20%);">
+                        <table class="table table-striped table-advance item-table table-bordered">
+                            <thead>
+                            <tr>
+                                <th class="text-center">Quantité</th>
+                                <th class="text-center">price</th>
+               
+                                <th class="text-center">Date</th>
+                                <th class="text-center">Fournisseur</th>
+                            </tr>
+                            </thead>
+                            <tbody class="product-table-body text-center">
+                                {% for i in stockin %}
+                                <tr>
+                                    <td>{{ i.quantity|floatformat:-2 }} </td>
+                                    <td>{{ i.price|floatformat:2 }} </td>
+               
+                                    <td>{{ i.dated_order|date:"H:i d/m/Y" }}</td>
+                                   
+                                    <td>
+                                        
+                                        {%  if i.reciept %} <a href=" {% url 'product:bonentree' id=i.reciept.id %}" class="text-white p-2" style="background: black;">{{i.reciept.supplier.name}}</a>
+                                        {% else %}
+                                        Stock initial
+                                        {%endif%}
+                                    </td>
+                                   
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="bg-white rounded shadow">
+                <h4 class="p-2 rounded text-white bg-danger shadow text-center">
+                    <strong>
+                        Sorties
+                    </strong >
+                </h4>
+                <!-- <table class="table table-striped table-advance table-hover item-table table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="text-center">
+                            Total sorties
+                        </th>
+       
+                        <th class="text-center">
+                            Total revenus
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody class="product-table-body text-center">
+                        <tr>
+                            <td>{{totalout}}</td>
+       
+                            <td class="totalprofit">{{totalamountout}}</td>
+                           
+                        </tr>
+                    </tbody>
+                </table> -->
+                <div class="p-2" style="background: rgb(255 221 221 / 20%);">
+                    <table class="table table-striped table-advance item-table table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="text-center">Quantité</th>
+                           
+                            <th class="text-center">Date</th>
+                            <th class="text-center">Facture</th>
+                        </tr>
+                        </thead>
+                        <tbody class="product-table-body text-center">
+                        {% for i in stockout %}
+                            <tr>
+                                <td class="qty">{{ i.quantity|floatformat:-2 }} </td>
+                                <td>{{ i.created_at|date:"H:i d/m/Y"}}</td>
+                                <td>
+                                    {{i.price}}
+                                </td>
+                                <!-- <td>
+                                    {% if i.invoice_id %}
+                                    <a  href="{% url 'sales:invoice_detail' invoice_id=i.invoice_id %}">Bon</a>
+                                    {% else %}
+                                    <a class="retourbtn btn" data-bs-toggle="modal" data-bs-target="#retourmodal" id="{{i.id}}">Retour</a>
+                                    {% endif %}
+                                </td> -->
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+
+<!-- <div class="fixed-bottom p-2 bg-{% if netprofit > 0%}success{%else%}danger{%endif%} text-white text-center">
+
+<div class="accordion accordion-flush" id="accordionFlushExample">
+    <div class="accordion-item bg-transparent text-white">
+        <h2 class="accordion-header" id="flush-headingOne">
+        <button class="accordion-button collapsed bg-transparent text-white" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+            Net profit :
+            {{netprofit}}
+        </button>
+        </h2>
+        <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+            {% if netprofit < 0%}
+            Rest en  Stock {{ rest }}
+            {% endif %}<br>
+            cost unit. {{product.pr_achat}} Dh<br>
+            Percentage vendu {{percentage}}%<br>
+
+
+
+        </div>
+        </div>
+    </div>
+</div>
+</div> -->
+<!-- retour modal -->
+<div class="modal fade" id="retourmodal" tabindex="-1" aria-labelledby="eretourmodalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+       
+        <div class="modal-body">
+            <form method="post" action="{% url 'product:retour' %}">
+                {% csrf_token %}
+               
+               
+                <div class="mb-3">
+                    <label>
+                        Qty
+                    </label>
+                    <input class="form-control" required type="number" name="qtyinp">
+                    <input class="form-control" type="text" name="productid" value="{{product.id}}" hidden>
+                    <input class="form-control" type="text" name="purchaseid" value="" hidden>
+                </div>
+               
+               
+               
+           
+                <button type="submit" class="btn btn-primary submitretour" disabled>Ajouter</button>
+           
+            </form>
+           
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+         
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+    
+    
+    qtyinp=$('[name="qtyinp"]')
+    $('.retourbtn').each((i, el)=>{
+        $(el).on('click', ()=>{
+            qty=parseInt($(el).parent().parent().find('.qty').text())
+            qtyinp.attr('max', qty)
+            purchseid=$(el).attr('id')
+            console.log(purchseid)
+            $('[name="purchaseid"]').val(purchseid)
+           
+        })
+    })
+    qtyinp.on('change', ()=>{
+        console.log('channged')
+        max=parseFloat(qtyinp.attr('max'))
+        if (qtyinp.val()>max || qtyinp.val()==0 || qtyinp.val()==''){
+            qtyinp.css({
+                'border':'1px solid red'
+            })
+            $('.submitretour').attr('disabled', true)
+            return
+        }else{
+            $('.submitretour').attr('disabled', false)
+        }
+    })
+    // $('.submitretour').on('click', ()=>{
+    //     $('.submitretour').attr('disabled', true)
+    // })
+</script>
+{% endblock %}

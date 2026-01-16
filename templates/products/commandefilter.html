@@ -1,0 +1,195 @@
+{{pdctnotcmnd}}
+{% load template_tags %}
+{% for item in products %}
+                   
+    <tr class="" commanded="{{item.commanded}}" pdctid="{{item.id}}" suppid="{{item.supplier.id}}" ctgid="{{item.category.id}}" style="background: {% if item.commanded %} yellowgreen;{% endif %} color: black; {%if item.expensive%} background:red;{%endif%}" >
+        <td>
+            
+            {% if item.image %}
+                <button data-bs-toggle="modal" data-bs-target="#imagedisplaymodal" class="imagedisplaybtn" onclick="imagedisplaybtn(event)">
+                    <img src="{{ item.image.url }}" class="imgproduct" alt="{{ item.name }}" height="50px" width="50px">
+                </button>
+            {% endif %}
+        </td>
+        <td class="product_ref">
+            {% for rr in item.ref|split_word %}
+                <b>
+                    {{rr.upper}}
+                </b>
+                <br>
+                    
+            {% endfor %}
+            
+        </td>
+        <td class="product_marks">
+            {% for rr in item.marks|split_word %}
+                <b>
+                    {{rr.upper}}
+                </b>
+                <br>
+                    
+            {% endfor %}
+            
+        </td>
+        <td class="product_name">
+            
+            {% if item.command %}<i class="text-success fa fa-check-circle fa-2x"></i>{% endif %}
+            {% if item.stock == 0 %}<i class="text-danger fa fa-exclamation-circle fa-2x"></i>{% endif %} {{ item.category.name.upper}} - {{ item.car.upper }} <br>
+            {% if item.commanded %} <b>{{ item.date_command|date:'d/m/Y'}}</b>{%endif%}
+        </td>
+        <td>
+            <div class="badge bg-primary">
+                {% for i in item.getsimillarscommand %}
+                {{i.mark}} => {{i.supplier}}<br>
+                {% endfor %}
+            </div><br>
+            <b class="marq">
+                {{item.mark}}
+            </b>
+        </td>
+        <!-- <td class="#">{{ item.unit_type }}</td> -->
+        <td class="stock">{{ item.stock|floatformat:-2 }}</td>
+        <td class="qty">
+            {{item.qtycommand|floatformat:-2}}
+        </td>
+        <td class="supplier">
+            {{ item.supplier.name }}
+        </td>
+        <!-- <td>{{ item.product_purchased_items|floatformat:-2 }}</td>
+        <td>{{ item.bar_code}}</td> -->
+        <td>
+            <!-- new code -->
+            <!-- <a href=''product:update_product' pk=item.id %}"><button class="btn btn-success btn-xs">Modifier</button></a> -->
+            <!-- <button class="btn fa fa-edit fa-2x text-primary editcommandebtn border" type="button" class="btn btn-success" dataid={{item.id}} data-bs-toggle="modal" data-bs-target="#editcommandemodal"></button> -->
+            <button class="btn fa fa-edit fa-2x text-primary editcommandebtn border" type="button" class="btn btn-success" dataid={{item.id}} onclick="updatesuppbtn(event)">
+
+            </button>
+            {% if not item.commanded %}
+            <i class="fa fa-check text-success fa-2x btn validcommand" data-itemid="{{item.id}}"></i>
+            {% endif %}
+            <i class="fa fa-times text-danger bg-danger fa-2x btn cancelcommanded" id="{{item.id}}" categoryid="{{item.category.id}}">Annuler</i>
+            
+            <!-- delete item is commented for now cause of the factorizaation -->
+            <!-- <button class="btn btn-danger btn-xs deleteproduct" title="Supprimer" data-id="{{item.id}}"><i class="fa fa-trash-o"></i></button> -->
+
+            <!-- old code
+            <a href=''product:add_product_items' product_id=item.id %}"><button class="btn btn-primary btn-xs">الدخول</button></a>
+            <a href=''product:item_details' pk=item.id %}"><button class="btn btn-success btn-xs"><i class="fa fa-eye"></i></button></a>-->
+            <div class="updatesupplier d-none">
+                <div class="form-group">
+                    {% csrf_token %}
+                    <select name="supplier" required class="form-select mb-3 select2">
+                        {% for supplier in suppliers %}
+                            <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="hidden" name="distination" value="commande">
+                    
+                    <button class="btn btn-primary" onclick="updatesuppcomnd(event, {{item.id}})">Ajouter</button>
+                </div>
+                <!-- <form class="form-horizontal add-ledger-form addsupplierform" action="{% url 'product:updatecommande' %}" method="post" autocomplete="off">
+                </form> -->
+            </div>
+            {% if not item.panier %} <button class="btn border fa fa-shopping-cart" onclick="addtopanier(event, '{{item.id}}')"></button> {% endif %}
+
+        </td>
+    </tr>
+    
+{% endfor %}
+{% for item in pdctnotcmnd %}
+                   
+    <tr class="" commanded="{{i.commanded}}" pdctid="{{item.id}}" suppid="{{item.supplier.id}}" ctgid="{{item.category.id}}" style="background: {% if item.commanded %} yellowgreen;{% endif %} color: black; {%if item.expensive%} background:red;{%endif%}" >
+        <td>
+            
+            {% if item.image %}
+                <button data-bs-toggle="modal" data-bs-target="#imagedisplaymodal" class="imagedisplaybtn" onclick="imagedisplaybtn(event)">
+                    <img src="{{ item.image.url }}" class="imgproduct" alt="{{ item.name }}" height="50px" width="50px">
+                </button>
+            {% endif %}
+        </td>
+        <td class="product_ref">
+            {% for rr in item.ref|split_word %}
+                <b>
+                    {{rr.upper}}
+                </b>
+                <br>
+                    
+            {% endfor %}
+            
+        </td>
+        <td class="product_marks">
+            {% for rr in item.marks|split_word %}
+                <b>
+                    {{rr.upper}}
+                </b>
+                <br>
+                    
+            {% endfor %}
+            
+        </td>
+        <td class="product_name">
+            
+            {% if item.command %}<i class="text-success fa fa-check-circle fa-2x"></i>{% endif %}
+            {% if item.stock == 0 %}<i class="text-danger fa fa-exclamation-circle fa-2x"></i>{% endif %} {{ item.category.name.upper}} - {{ item.car.upper }}
+            {% if item.commanded %} <b>{{ item.date_command|date:'d/m/Y'}}</b>{%endif%}
+        </td>
+        <td>
+            <div class="badge bg-primary">
+                {% for i in item.getsimillarscommand %}
+                {{i.mark}} => {{i.supplier}}<br>
+                {% endfor %}
+            </div><br>
+            <b class="marq">
+                {{item.mark}}
+            </b>
+        </td>
+        <!-- <td class="#">{{ item.unit_type }}</td> -->
+        <td class="stock">{{ item.stock|floatformat:-2 }}</td>
+        <td class="qty">
+            {{item.qtycommand|floatformat:-2}}
+        </td>
+        <td class="supplier">
+            {{ item.supplier.name }}
+        </td>
+        <!-- <td>{{ item.product_purchased_items|floatformat:-2 }}</td>
+        <td>{{ item.bar_code}}</td> -->
+        <td>
+            
+            <!-- new code -->
+            <!-- <a href=''product:update_product' pk=item.id %}"><button class="btn btn-success btn-xs">Modifier</button></a> -->
+            <!-- <button class="btn fa fa-edit fa-2x text-primary editcommandebtn border" type="button" class="btn btn-success" dataid={{item.id}} data-bs-toggle="modal" data-bs-target="#editcommandemodal"></button> -->
+            <button class="btn fa fa-edit fa-2x text-primary editcommandebtn border" type="button" class="btn btn-success" dataid={{item.id}} onclick="updatesuppbtn(event)">
+
+            </button>
+            {% if not item.commanded %}
+            <i class="fa fa-check text-success fa-2x btn validcommand" data-itemid="{{item.id}}"></i>
+            {% endif %}
+            <i class="fa fa-times text-white bg-danger fa-2x btn cancelcommanded" id="{{item.id}}" categoryid="{{item.category.id}}">Annuler</i>
+            
+            <!-- delete item is commented for now cause of the factorizaation -->
+            <!-- <button class="btn btn-danger btn-xs deleteproduct" title="Supprimer" data-id="{{item.id}}"><i class="fa fa-trash-o"></i></button> -->
+
+            <!-- old code
+            <a href=''product:add_product_items' product_id=item.id %}"><button class="btn btn-primary btn-xs">الدخول</button></a>
+            <a href=''product:item_details' pk=item.id %}"><button class="btn btn-success btn-xs"><i class="fa fa-eye"></i></button></a>-->
+            <div class="updatesupplier d-none">
+                <div class="form-group">
+                    {% csrf_token %}
+                    <select name="supplier" required class="form-select mb-3 select2">
+                        {% for supplier in suppliers %}
+                            <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="hidden" name="distination" value="commande">
+                    
+                    <button class="btn btn-primary" onclick="updatesuppcomnd(event, {{item.id}})">Ajouter</button>
+                </div>
+                <!-- <form class="form-horizontal add-ledger-form addsupplierform" action="{% url 'product:updatecommande' %}" method="post" autocomplete="off">
+                </form> -->
+            </div>
+            {% if not item.panier %} <button class="btn border fa fa-shopping-cart" onclick="addtopanier(event, '{{item.id}}')"></button> {% endif %}
+
+        </td>
+    </tr>
+    
+{% endfor %}

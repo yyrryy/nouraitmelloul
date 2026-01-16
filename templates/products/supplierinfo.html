@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block menu_ledger %}active{% endblock %}
+{% block submenu_customer_ledger %}active{% endblock %}
+
+{% block content %}
+<!-- add one client model -->
+<div class="bg-white rounded shadow mt-3 p-2">
+    <div class="d-flex justify-content-between">
+        <h2 class="text-center">
+            {{supplier.name.upper}}
+        </h2>
+        <div>
+            <h2>
+                <span class="totalholder">
+                   
+                </span> DH
+            </h2>
+        </div>
+    </div>
+</div>
+<div class="col-md-12">
+    <br>
+    <!-- <button type="button" class="btn btn-success addoneproduct" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Ajouter+
+    </button> -->
+    <br><br><br>
+   
+    <div class="bg-white shadow rounded">
+        <table class="table table-advance table-bordered purchased-table">
+           
+            <div class="input-group custom-search-form d-flex">
+                <input type="text" class="form-control search-invoice calculatetotal" placeholder="Rechercher ...">
+                <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                <h3 class="filtereddata"></h3>
+            </div>
+           
+            <hr>
+            <thead>
+            <tr>
+                <th class="text-center"><i class="fa fa-bullhorn"></i>Date</th>
+                <th class="text-center"><i class=" fa fa-bookmark"></i>
+                    N° facture
+                </th>
+                <th class="text-center"><i class=" fa fa-bookmark"></i>
+                    Total
+                </th>
+                <th class="text-center"><i class=" fa fa-bookmark"></i>
+                    Rest
+                </th>
+               
+               
+            </tr>
+            </thead>
+            <tbody class="ledger-table-body product-table-body">
+            {% for i in bons %}
+            <tr>
+                <td>{{ i.date|date:'d/m/Y' }}</td>
+                <td>
+                    <a href="{% url 'product:bonentree' i.id %}">{{ i.nbon }}</a>
+                </td>
+                <td class="total">{{ i.total }}</td>
+                <td>{{ i.rest }}</td>
+            </tr>
+            {% endfor %}
+           
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    var total = 0;
+    $('tr:not([style="display: none;"])').find('td.total').each(function() {
+        total += parseFloat($(this).text());
+    });
+    $('.totalholder').text(total.toFixed(2))
+    $('.calculatetotal').on('input', ()=>{
+       
+
+        setTimeout(function() {
+            var total = 0;
+            $('tr:not([style="display: none;"])').find('td.total').each(function() {
+                total += parseFloat($(this).text());
+            });
+            $('.totalholder').text(total.toFixed(2));
+        }, 500);
+    })
+</script>
+{% endblock %}

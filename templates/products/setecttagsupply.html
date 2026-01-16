@@ -1,0 +1,29 @@
+<div class="col-6">
+    {% if id != 87 %}
+    <select id="all-items" class="form-select select2 articlesselect">
+        <option value="0">Articles</option>
+        {% for i in products %}
+        <option {% if i.image %} data-image="{{i.image.url}}" {% endif %} data-price="{{i.price}}" data-stock= "{{i.stock}}" data-prachat="{{i.pr_achat}}"data-id= "{{i.id}}" data-ref="{{i.ref}}" data-category="{{i.category}}" data-mark="{{i.mark}}" data-car="{{i.car}}">{{i.ref}} - {{i.category}}  - {{i.car}} - {{i.mark}}</option>
+        {% endfor %}
+    </select>
+    <button class="btn btn-dark fa fa-refresh refreshitemssupplier"></button>
+    <strong>
+        Articles: <span class="articleslen">
+            {{products|length}}
+        </span>
+    </strong>
+    {% endif %}
+</div>
+<div class="col-5">
+    <input type="text" class="form-control refexeption refexeptioninp" placeholder="REF exeption">
+    <!-- <select class="select2 categoryid w-100 refexeption refexeptioncategory">
+        {% for i in categories %}
+        <option value="{{i.id}}">
+            {{i.name}}
+        </option>
+        {% endfor %}
+    </select> -->
+    <div class="exeptionresults d-flex flex-column">
+
+    </div>
+</div>

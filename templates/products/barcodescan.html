@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Scanner Input</title>
+    <script src="/static/js/jquery.min.1.7.js"></script>
+    <script src="/static/js/jquery.scannerdetection.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #barcode-input {
+            width: 300px;
+            height: 40px;
+            font-size: 18px;
+            padding: 5px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Scan Barcode</h1>
+    <input type="text" id="barcode-input" placeholder="Scan your barcode here..." autofocus />
+    <div id="result"></div>
+
+    <script>
+        $(document).ready(function() {
+            // $('#barcode-input').scannerDetection({
+            //     onComplete: function(barcode) {
+            //         alert('Barcode detected: ' + barcode);
+            //     },
+            //     onError: function(input) {
+            //         console.error('Error scanning:', input);
+            //     },
+            //     minLength: 8,
+            //     timeBeforeScanTest: 200,
+            //     avgTimeByChar: 50
+            // });
+        const charToNumberMap = {
+            '&': '1',
+            'é': '2',
+            '"': '3',
+            "'": '4',
+            '(': '5',
+            '-': '6',
+            'è': '7',
+            '_': '8',
+            'ç': '9',
+            'à': '0'
+            };
+            $('#barcode-input').on('keypress', function(event) {
+                // Convert special characters to numbers as they are typed
+                const char = String.fromCharCode(event.which);
+                if (charToNumberMap[char]) {
+                    // Replace the character with the mapped number
+                    event.preventDefault(); // Prevent the original character from being added
+                    $(this).val($(this).val() + charToNumberMap[char]); // Append the mapped number
+                }
+
+                // Listen for the Enter key (key code 13)
+                if (event.which === 13) {
+                    const barcodeValue = $(this).val(); // Get the scanned value
+                    $('#result').text('Detected barcode: ' + barcodeValue); // Display the result
+                    $(this).val(''); // Clear the input field for the next scan
+                }
+            });
+        });
+    </script>
+</body>
+</html>

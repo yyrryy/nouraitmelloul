@@ -1,0 +1,224 @@
+{% load template_tags %}
+{% for item in products %}
+<!-- 
+    
+ -->
+ <tr class="pdct-row">
+    <td class="product_ref">
+        {% for rr in item.ref|split_word %}
+            <b>
+                {{rr.upper}}
+            </b>
+            <br>
+                
+        {% endfor %}
+        
+    </td>
+    <td class="product_marks">
+        {% for rr in item.marks|split_word %}
+            <b>
+                {{rr.upper}}
+            </b>
+            <br>
+                
+        {% endfor %}
+        
+    </td>
+    <td class="minimum" hidden>
+        {{item.minstock}}
+    </td>
+    <td class="pdct">
+        {% if item.image %}
+        <button data-bs-toggle="modal" data-bs-target="#imagedisplaymodal" class="imagedisplaybtn">
+            <img src="{{ item.image.url }}" class="imgproduct" alt="{{ item.name }}" height="50px" width="50px">
+        </button>
+        {% endif %}
+        {% if item.command %}<i class="text-success fa fa-check-circle fa-2x"></i>{% endif %}
+        {% if item.stock == 0 %}<i class="text-danger fa fa-exclamation-circle fa-2x"></i>{% endif %}
+        <span class="product_name" categoryid="{{item.category.id}}">
+            <b>
+            {{ item.category}} 
+         </b>
+        </span>
+    </td>
+    <td class="mark text-center text-{% if item.stock == 0 %}danger{% else %}success{% endif %}" markid="{{item.mark.id}}" >
+        <b>{{item.mark}}</b><br>
+        ({{item.stock|floatformat:-2}})
+    </td>
+    <td class="car">
+        <b>
+            {{ item.car }}
+        </b>
+    </td>
+    <td class="originsupp" suppid="{{item.originsupp.id}}">
+        <b>
+            {{ item.originsupp.name }}
+        </b>
+    </td>
+    {%if item.stock == 0%}
+    <td class="product_stock" style="background:red; color:black;">
+        
+        {% for i in item.getsimillars %}
+            <strong class="badge">
+                {{i.mark}}, {{i.stock|floatformat:-2}}
+            </strong> <br>
+        {% endfor %}
+        {{item.stock|floatformat:-2}} <br>
+        <b {% if item.commanded %}style="color: yellowgreen;"{%endif%}>
+            {% if item.commanded %}<i class=" fa fa-check-circle fa-2x"></i> {{item.supplier}}
+            <b>({{ item.date_command|date:'d/m/Y'}})</b>{%endif%}
+        </b>
+    </td>
+    {%elif item.stock > 0 and item.stock < 3%}
+    <td class="product_stock" style="background:yellow; color:black;">
+        <b>
+            {{item.stock|floatformat:-2}}
+        </b>
+    </td>
+    {%else%}
+    <td class="product_stock" style="background: yellowgreen;color:black;">
+        <b>
+            {{item.stock|floatformat:-2}}
+        </b>
+    </td>
+    {% endif %}
+    <td hidden class="product_pr_achat">
+        {{item.pr_achat}}
+    </td>
+    <td class="">
+        <!-- prices here price1 then price2 ... -->
+        
+        {% if item.getprices|length > 0 %}
+        {% for i in item.getprices %}
+            <span class="prices">
+                {{i.0|floatformat:2}}
+            </span>
+            (<span class="qtyofprice">
+                {{i.1|floatformat:-2}} => {{i.2}}
+            </span>) <br>
+        {% endfor %}
+        {% else %}
+        DP: {{item.pr_achat}} DH
+        {% endif %}
+        <!-- {{item.pr_achat}} -->
+    </td>
+    <td class="product_price" hidden>
+        <b>
+            {{item.price|floatformat:2}}
+        </b>
+    </td>
+    {% if not home %}
+    <td>
+        <button type="button" class="btn btn-success update fa fa-edit" data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="{{item.id}}" title="modifier">
+           
+        </button>
+        <a  href="{% url 'product:producthistory' id=item.id %}"><button class="btn btn-danger btn-xs fa fa-history" title="Historique"></button></a>
+
+        <button type="button" class="btn btn-info duplicatebtn fa fa-copy"  data-id="{{item.id}}" title="dupliquer">
+        </button>
+        
+        <div class="mt-2 d-none duplicatediv">
+            <!-- <input type="number" class="mb-2 form-control stockduplicate" placeholder="stock"> -->
+            <input type="number" class="mb-2 form-control priceduplicate" placeholder="Prix">
+            <input type="text" class="mb-2 form-control refduplicate" placeholder="ref">
+            <input type="text" class="mb-2 form-control marksduplicate" placeholder="marks">
+            <div>
+                <select class="form-select markduplicate mb-2 select2" style="width:100%;">
+                    <option value="">
+                       ---Marque---
+                    </option>
+                    {% for i in marks %}
+                        <option value="{{i.id}}">
+                            {{i.name}}
+                        </option>
+                    {% endfor %}
+                </select> 
+            </div>
+            <div>
+                <select class="form-select suppduplicate mb-2 select2" style="width:100%;">
+                    <option value="">
+                       ---Fournisseur---
+                    </option>
+                    {% for i in suppliers %}
+                        <option value="{{i.id}}">
+                            {{i.name}}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input type="text" class="form-control saisieduplicate mb-2" placeholder="saisie">
+            <button class="createduplicate btn btn-success w-100" id="{{item.id}}" categoryid="{{item.category.id}}">+</button>
+        </div>
+    </td>
+    {% endif %}
+   
+    {% if home %}
+        <td>
+            {% if item.stock != 0 %}
+            <input type="number" class="form-control priceinput" placeholder="Prix" {% if item.getprices|length == 1 %} {% endif %} value="{{item.getprices.0.0|floatformat:2}}">
+            <input class="form-control sortieinput" type="number" min="0" max="{{item.stock}}" name="sortieqty" placeholder="Qty">
+            <button class="btn btn-primary updatestockbtn fa fa-check w-100" id="{{item.id}}" categoryid="{{item.category.id}}"></button>
+            {% endif %}
+        </td>
+        <td>
+            <button type="button" class="btn btn-success update fa fa-edit" data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="{{item.id}}" title="modifier"></button>
+            <a  href="{% url 'product:producthistory' id=item.id %}"><button class="btn btn-danger btn-xs fa fa-history" title="Historique"></button></a>
+        {% if not item.urgent %}
+        <button class="btn btn-primary" onclick="makeurgent({{item.id}})">
+            Urgent
+        </button>
+        {% endif %}
+        <button class="fa fa-barcode btn border" onclick="$('.barcode{{item.id}}').toggleClass('d-none')"></button>
+        
+        <button type="button" class="btn btn-info duplicatebtn fa fa-copy"  data-id="{{item.id}}" title="dupliquer">
+        </button>
+        
+        <div class="mt-2 d-none duplicatediv">
+            <!-- <input type="number" class="mb-2 form-control stockduplicate" placeholder="stock"> -->
+            <input type="number" class="mb-2 form-control priceduplicate" placeholder="Prix">
+            <input type="text" class="mb-2 form-control refduplicate" placeholder="ref">
+            <input type="text" class="mb-2 form-control marksduplicate" placeholder="marks">
+            <div>
+                <select class="form-select markduplicate mb-2 select2" style="width:100%;">
+                    <option value="">
+                       ---Marque---
+                    </option>
+                    {% for i in marks %}
+                        <option value="{{i.id}}">
+                            {{i.name}}
+                        </option>
+                    {% endfor %}
+                </select> 
+            </div>
+            <div>
+                <select class="form-select suppduplicate mb-2 select2" style="width:100%;">
+                    <option value="">
+                       ---Fournisseur---
+                    </option>
+                    {% for i in suppliers %}
+                        <option value="{{i.id}}">
+                            {{i.name}}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input type="text" class="form-control saisieduplicate mb-2" placeholder="saisie">
+            <button class="createduplicate btn btn-success w-100" id="{{item.id}}" categoryid="{{item.category.id}}">+</button>
+        </div>
+        <div class="barcode{{item.id}} d-none">
+            <input type="number" placeholder="Prix" class="form-control codebarprice">
+            <!-- <input type="number" placeholder="qty" class="form-control codebarqty"> -->
+            <button class="btn btn-primary w-100" onclick="printcodebar(event, '{{item.id}}')">Imprimer</button>
+        </div>
+        </td>
+    {% endif %}
+</tr>
+{% empty %}
+    <tr>
+        <td colspan="6">No products found</td>
+    </tr>
+
+{% endfor %}
+<script>
+    $('.select2').select2()
+</script>

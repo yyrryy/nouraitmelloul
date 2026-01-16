@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture_{{facture.facture_no}}</title>
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <style>
+      
+    </style>
+</head>
+<body>
+    <div class="d-flex justify-content-between bg-dark">
+      <a class="btn btn-sm btn-info" href="/product/listfactures">
+        <i class="fa fa-arrow-left mr-1"></i> Retour </a>
+        <button class="btn btn-sm btn-info" onclick="$('.ice').toggleClass('d-none')">
+          <i class="fa fa-arrow-left mr-1"></i> ICE </button>
+      <a class="btn btn-sm btn-info" href="#" data-abc="true" onclick="PrintInvoice('invoice')">
+        <i class="fa fa-print mr-1"></i> Print </a>
+        
+        
+      </div>
+    <div class="container-fluid mt-100 mb-100">
+        <div id="ui-view">
+          <div class=" d-flex flex-column" id="invoice">
+            <div class="d-flex justify-content-between px-3">
+              <div class="border-end col-6">
+                <h1 class="underline">
+                  Nour pieces auto
+                </h1>
+                <ul>
+                  <li>PIECES DE RECHANGE</li>
+                  <li>HUILES ET LUBRIFIANTS</li>
+                  <li>ACCESSOIRES AUTO</li>
+                </ul>
+                
+                
+                
+              </div>
+
+              <div>
+                <img src="/static/img/logo.jpeg" alt="" width="300" height="200"><br>
+                <!-- <h2>
+                  Facture
+                </h2> -->
+                
+              </div>
+              
+            </div>
+            <div class="d-flex justify-content-between p-2">
+              
+              <div class="col-6 ms-5">
+                <strong>
+                  Facture N°: {{facture.facture_no}}
+                </strong> <br>
+                <strong>
+                  Date: {{facture.date | date:'d/m/Y'}}
+                </strong>
+              </div>
+              <div class="col-6 ms-5">
+                <div>
+                   
+                  <strong>STE: {{ facture.client.customer_name.upper }}.</strong>
+                </div>
+                <div>
+                  <strong>ICE: {{ facture.client.ice }}</strong>
+                </div>
+                <div>
+                  <strong>Adresse: {{ facture.client.address }}</strong>
+                </div>
+                
+              </div>
+            </div>
+              <div class="mt-3">
+                <table class="table table-bordered text-center">
+                  <thead style="background: black; color: white;">
+                    <tr>
+                      <th class="center" style="width: 7%;">B.C</th>
+                      <th class="center" style="width: 7%;">B.L</th>
+                      <th class="center" style="width: 7%;">Qté</th>
+                      <th class="center">Designation</th>
+                      <th class="center" style="width: 10%;">Prix unit.</th>
+                      <th class="center" style="width: 10%;">Mantant</th>
+                    </tr>
+                  </thead>
+                  <tbody >
+                      {% for i in items %}
+                    <tr>
+                      <td >
+                        <strong style="font-size: 19px;">
+                          {{ i.bl}}
+                        </strong>
+                      </td>
+                      <td >
+                        <strong style="font-size: 19px;">
+                          {{ i.bc}}
+                        </strong>
+                      </td>
+                       <td >
+                        <strong style="font-size: 19px;">
+
+                          {{ i.qty|floatformat:-2}}
+                        </strong>
+                      </td>
+                      <td class="">
+                        <strong style="font-size: 19px;">
+                          {{i.article.upper}}
+                        </strong>
+                      </td>
+
+                      <td class="center">
+                        <strong style="font-size: 19px;">
+                          {{i.price|floatformat:2}}
+                        </strong>
+                      </td>
+                      <td >
+                        <strong style="font-size: 19px;">
+                          {{ i.total|floatformat:2 }}
+                        </strong>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                    
+                    
+                  
+                  <!-- <tr>
+                      <td colspan="2"></td>
+                      <td>TVA</td>
+                      <td>{{tva}} Dh</td>
+                  </tr>
+                  <tr>
+                      <td colspan="2"></td>
+                      <td>Total TTC</td>
+                      <td>{{totalttc}} Dh</td>
+                  </tr> -->
+                  </tbody>
+                  
+                </table>
+
+              </div>
+              
+              <div class="foooterfacture w-100 px-5">
+                <div class="mt-3 row">
+                  <div class="col-6">
+                    arrêté la presenté facture à la somme de: <br>
+                      <strong class="frenchword"></strong>
+                  </div>
+                  <div class="d-flex flex-column col-6" >
+                    <div class="p-2 d-flex justify-content-between">
+                      <p>Total</p>
+                      <p>
+                        {{facture.total|floatformat:2}}
+                      </p>
+                    </div>
+                    <div class="p-2 d-flex justify-content-between" style="background:rgb(0, 0, 0); color: white; font-size: 16px;">
+                      <strong>Total Net à payé</strong>
+                      <strong>
+                        {{facture.total|floatformat:2}}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between border" style="background: rgb(196, 196, 196);">
+                  <div >
+                    Adresse: N° 90 BLOC 4 ROUTE DE BIOUGRA AIT MELLOUL <br>
+                    TEL: 05 28 24 40 70 / 05 28 30 82 84 <br>
+                    EMAIL: NOURPIECESSAUTO@GMAIL.COM <br>
+                    PATENTE: 49804975 <br>
+                    <span class="ice">
+                      ICE: 000506046000081
+                    </span>
+                  </div> 
+
+                  <div class="">
+                    <div class="">
+                      <img src="/static/img/p1.jpeg" width="82">
+                      <img src="/static/img/p2.jpeg" width="82">
+                      <img src="/static/img/p3.jpeg" width="82">
+                    </div>
+                    <div>
+                      <img src="/static/img/p4.jpeg" width="164">
+                      <img src="/static/img/p5.jpeg" width="82">
+                    </div>
+                  </div>
+                </div>
+              </div> 
+          </div>
+            
+        </div>
+    </div>
+</body>
+<script src="{% static 'js/jquery.min.1.7.js'%}"></script>
+<script src="/static/js/jquerySpellingNumber.js"></script>
+<script>
+  console.log()
+
+  function PrintInvoice(divName){
+         var printContents = document.getElementById(divName).innerHTML;
+         var originalContents = document.body.innerHTML;
+         document.body.innerHTML = printContents;
+         $('body').css('font-size', '12px')
+         //$('.head').addClass('')
+        //  $('table').css('font-size', '9px');
+         //$("table > thead > tr > th").css('padding', '0px');
+         //$("table > tbody > tr > td").css('padding', '0px');
+         $('body').addClass('d-flex flex-column vh-100 p-3')
+         $('.foooterfacture').addClass('mt-auto');
+         window.print();
+         document.body.innerHTML = originalContents;
+    }
+    $('.frenchword').text($.spellingNumber({{facture.total|floatformat:2}}, {
+    lang:'fr',
+    wholesUnit:"Dirhams",
+    fractionUnit:"cents",
+    digitsLengthW2F: 2,
+    decimalSeperator:"et"
+
+  }))
+</script>
+</html>

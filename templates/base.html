@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/html" data-bs-theme="dark">
+{% load static %}
+{% load template_tags %}
+<head>
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <title>
+        {% if title %} {{title}} {% else %}
+        Accueill
+        {% endif %}
+    </title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'css/select2.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/alertify.min.css' %}" rel="stylesheet">
+
+    <!--external css-->
+    <style>
+      .autocomplete-item{
+        background: rgb(30, 132, 250);
+        color: white;
+        margin-bottom: 5px;
+        cursor: pointer;
+        
+      }
+      .autocomplete-container{
+        position: absolute;
+        left: 48%;
+        height: 20em;
+        overflow-y: scroll;
+        z-index: 99999;
+      }
+      /* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+    
+    .open > .dropdown-menu{
+        left: inherit;
+        }
+    .dropdown-menu{
+        right:12px !important;
+    }
+    .notify-arrow{
+        left:88% !important;
+    }
+    .panel_bg_color{
+        background:#6180c1;
+    }
+    .panel_txt{
+        color:#fff;
+        font-size:22px;
+        font-weight:bold;
+    }
+    .home_icon{
+        float:left;
+        color:#fff;
+        margin-right:8px;
+        margin-top:5px;
+    }
+    .home_icon:hover{
+        color:#fff;
+    }
+
+.pure-tree {
+  text-align: left;
+  display: block;
+}
+.pure-tree.main-tree {
+  width: 18em;
+  display: inline-block;
+  padding-left: 0;
+}
+.pure-tree:not(.main-tree) {
+  padding-left: .5em;
+  background: aliceblue;
+}
+.pure-tree:not(.main-tree) li {
+  overflow: hidden;
+  height: 0;
+  display: block;
+}
+.pure-tree label {
+  display: block;
+  cursor: pointer;
+  color: #717780;
+  border-bottom: 1px dashed #B0B9C5;
+  padding: 1.125em 1.125em 1.125em 0;
+}
+.pure-tree label:before {
+  width: 1em;
+  height: 1em;
+  line-height: 1em;
+  display: inline-block;
+  font-family: 'FontAwesome', sans-serif;
+  content: "\f114";
+  padding-right: .75em;
+}
+.pure-tree label:hover {
+  color: #434a58;
+  border-bottom-color: #434a58;
+}
+.pure-tree .pure-tree_link a {
+  padding: 1.500em 1.125em 0.750em 0;
+  display: block;
+  text-decoration: none;
+}
+.pure-tree .pure-tree_link a:hover {
+  color: #434a58;
+}
+.pure-tree.nested {
+  padding-left: 1.7em;
+}
+.pure-tree [type="checkbox"] {
+  display: none;
+}
+.pure-tree [type="checkbox"]:checked + label {
+  color: #434a58;
+  border-bottom-color: #434a58;
+}
+.pure-tree [type="checkbox"]:checked ~ ul > li {
+  height: auto;
+}
+.categoryactive{
+        padding: 7px;
+        color: #dc3545;
+        font-weight: bold;
+    }
+    .appcontainer{
+      /* filter: blur(5px); */
+    }
+    .alertify-notifier{
+      color: white;
+      font-size: 25;
+      font-weight: bold;
+    }
+    .nav-side-menu {
+  overflow: auto;
+  font-family: verdana;
+  font-size: 12px;
+  font-weight: 200;
+  background-color: #2e353d;
+  position: fixed;
+  top: 0px;
+  height: 100%;
+  color: #e1ffff;
+}
+.nav-side-menu .brand {
+  background-color: #23282e;
+  line-height: 50px;
+  display: block;
+  text-align: center;
+  font-size: 14px;
+}
+.nav-side-menu .toggle-btn {
+  display: none;
+}
+.nav-side-menu ul,
+.nav-side-menu li {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+  line-height: 35px;
+  cursor: pointer;
+  /*    
+    .collapsed{
+       .arrow:before{
+                  FontAwesome;
+                 content: "\f053";
+                 display: inline-block;
+                 padding-left:10px;
+                 padding-right: 10px;
+                 vertical-align: middle;
+                 float:right;
+            }
+     }
+*/
+}
+.nav-side-menu ul :not(collapsed) .arrow:before,
+.nav-side-menu li :not(collapsed) .arrow:before {
+  font-family: FontAwesome;
+  content: "\f078";
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: middle;
+  float: right;
+}
+.nav-side-menu ul .active,
+.nav-side-menu li .active {
+  border-left: 3px solid #d19b3d;
+  background-color: #4f5b69;
+}
+.nav-side-menu ul .sub-menu li.active,
+.nav-side-menu li .sub-menu li.active {
+  color: #d19b3d;
+}
+.nav-side-menu ul .sub-menu li.active a,
+.nav-side-menu li .sub-menu li.active a {
+  color: #d19b3d;
+}
+.nav-side-menu ul .sub-menu li,
+.nav-side-menu li .sub-menu li {
+  background-color: #181c20;
+  border: none;
+  line-height: 28px;
+  border-bottom: 1px solid #23282e;
+  margin-left: 0px;
+}
+.nav-side-menu ul .sub-menu li:hover,
+.nav-side-menu li .sub-menu li:hover {
+  background-color: #020203;
+}
+.nav-side-menu ul .sub-menu li:before,
+.nav-side-menu li .sub-menu li:before {
+  font-family: FontAwesome;
+  content: "\f105";
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: middle;
+}
+.nav-side-menu li {
+  padding-left: 0px;
+  border-left: 3px solid #2e353d;
+  border-bottom: 1px solid #23282e;
+}
+.nav-side-menu li a {
+  text-decoration: none;
+  color: #e1ffff;
+}
+.nav-side-menu li a i {
+  padding-left: 10px;
+  width: 20px;
+  padding-right: 20px;
+}
+.nav-side-menu li:hover {
+  border-left: 3px solid #d19b3d;
+  background-color: #4f5b69;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;
+}
+@media (max-width: 767px) {
+  .nav-side-menu {
+    position: relative;
+    width: 100%;
+    margin-bottom: 10px;
+  height:inherit;
+  }
+  .nav-side-menu .toggle-btn {
+    display: block;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 10 !important;
+    padding: 3px;
+    background-color: #ffffff;
+    color: #000;
+    width: 40px;
+    text-align: center;
+  }
+  .brand {
+    text-align: left !important;
+    font-size: 22px;
+    padding-left: 20px;
+    line-height: 50px !important;
+  }
+}
+@media (min-width: 767px) {
+  .nav-side-menu .menu-list .menu-content {
+    display: block;
+  }
+}
+    </style>
+    {% block css %}{% endblock %}
+    <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <!-- <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet"> -->
+
+
+    <script src="{% static 'js/jquery.min.1.7.js'%}"></script>
+</head>
+
+<body>
+  {% product_notifications retailer_id=request.user.retailer_user.retailer.id as p_n %}
+  {% command as pc %}
+  {% lenproducts as length %}
+  {% products as pdcts %}
+  {% ensemble as en %}
+  {% arr as arr %}
+  {% urgentpdcts as urgentpdcts %}
+  {% minpdcts as minpdcts %}
+  {% categorynames as categorynames %}
+  <div class="alert alert-success d-none" role="alert" style="    position: absolute;
+  top: 75px;
+  right: 5px;
+  width: 50vh;
+  height: 10vh;
+  z-index: 999;">
+    ok
+  </div>
+  <div class="loading flex-column align-items-center justify-content-center w-100 h-100 position-fixed top-0 bg-dark d-none" style="z-index:1199">
+    <div class="spinner-border text-light"></div>
+    <strong class="text-light textloading">
+
+    </strong>
+</div>
+
+<div class="password w-100 d-none" style="position: fixed; z-index: 9999; height: 100%; background: rgba(40, 40, 41, 0.651);">
+<div class="col-5 m-auto">
+  <input type="text" class="form-control passwordinput" placeholder="Mot de passe">
+  
+</div>
+</div>
+
+<section id="container" class="d-flex" >
+  <div class="col-2">
+    <div class="nav-side-menu d-flex flex-column">
+      <div class="brand">{{ request.user.retailer_user.retailer.name }}</div>
+      <i class="fa fa-bars fa-2x toggle-btn" data-bs-toggle="collapse" data-bs-target="#menu-content"></i>
+   
+          <div class="menu-list">
+   
+              <ul id="menu-content" class="menu-content collapse out">
+                  <li>
+                    <a href="/">
+                    <i class="fa fa-dashboard fa-lg"></i> Dashboard
+                    </a>
+                  </li>
+                  
+                  <li>
+                    <a href="/product/addproduct/">
+                        <i class="fa fa-plus fa-lg"></i>
+                    + ARTICLE
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/product/items/productslistbycategory/">
+                      <i class="fa fa-list fa-lg"></i>
+                    List des produits
+                    </a>
+                  </li>
+                  <li  data-bs-toggle="collapse" data-bs-target="#products" class="collapsed">
+                    <a href="#"><i class="fa fa-gift fa-lg"></i> Fournisseurs <span class="arrow"></span></a>
+                  </li>
+                  <ul class="sub-menu collapse" id="products">
+                    <li><a href="{% url 'product:supplierslist' %}">
+                      List fournisseurs
+                    </a></li>
+                      <li><a href="{% url 'product:supply' %}">
+                        Recevoir des prdts
+                      </a></li>
+                      <li><a href="{% url 'product:avoirsupp' %}">
+                        Avoir Fournisseur
+                      </a></li>
+                     
+                      <li><a href="{% url 'product:bonsentrees' %}">
+                        Bons d'entrées
+                      </a></li>
+                      <li><a href="{% url 'product:marks' %}">
+                        Les marques
+                      </a></li>
+                  </ul>
+ 
+ 
+                  <li data-bs-toggle="collapse" data-bs-target="#service" class="collapsed">
+                    <a href="#"><i class="fa fa-globe fa-lg"></i> Comptabilité <span class="arrow"></span></a>
+                  </li>  
+                  <ul class="sub-menu collapse" id="service">
+                    <li><a href="{% url 'sales:create_invoice' %}">
+                      +BON
+                    </a></li>
+                    <li><a href="{% url 'product:factureview' %}">
+                      +Facture
+                    </a></li>
+                    <li><a href="{% url 'product:relveview' %}">
+                      +Relevé
+                    </a></li>
+                    <li><a href="{% url 'product:deviseview' %}">
+                      +Devise
+                    </a></li>
+                    
+                    <li><a href="{% url 'sales:invoice_list' %}">
+                      List des Bons
+                    </a></li>
+                    <li><a href="/product/searchcompta">
+                      Search comptabilité
+                    </a></li>
+                    <li><a href="/product/listfacturesnonpaye">
+                      List des Factures non reglé
+                    </a></li>
+                    <li><a href="/product/listfacturespaye">
+                      List des Factures reglé
+                    </a></li>
+                    <li><a href="/product/listfacturesmanual">
+                      List des Factures entreprise
+                    </a></li>
+                    <li><a href="{% url 'product:listreleve' %}">
+                      List des releve
+                    </a></li>
+                    <li><a href="{% url 'product:listdevises' %}">
+                      List des Devises
+                    </a></li>
+                  </ul>
+ 
+ 
+                  
+                  
+ 
+                   <li>
+                    <a href="{% url 'ledger:customer_ledger_list' %}"><i class="fa fa-car fa-lg"></i> Clients </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'product:lowstock' %}">
+                        <b class="text-success bg-danger text-white rounded shadow p-2">
+
+                          Rupture de stock <span class="zerostock">({{p_n}})</span>
+                        </b>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'product:productscommande' %}">
+                          <b class="text-success bg-white rounded shadow p-2">
+                            <i class="fa fa-shopping-cart fa-2x"></i>
+                            Commande <span class="ordered">
+                              ({{pc}})
+                            </span>
+                          </b>
+                      </a>
+                    </li>
+    
+                    
+                    <li>
+                      <a href="{% url 'product:lowintwins' %}">
+                        <b class="text-primary bg-white rounded shadow p-2">
+                          <i class="fa fa-question fa-2x"></i>
+                          Ensemble <span class="">
+                            ({{en}})
+                          </span>
+                        </b>
+                      </a>
+                    </li>
+    
+                    <li>
+                      <a href="{% url 'product:lowinarr' %}">
+                        <b class="text-primary bg-white rounded shadow p-2">
+                          ARRETDHUILE / BOUGIE <span class="">
+                            ({{arr}})
+                          </span>
+                        </b>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'product:urgent' %}">
+                        <b class="text-primary bg-white rounded shadow p-2">
+                          URGENT ({{urgentpdcts}})
+                        </b>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{% url 'product:minimumstock' %}">
+                        <b class="text-primary bg-white rounded shadow p-2">
+                          Minimum ({{minpdcts}})
+                        </b>
+                      </a>
+                    </li>
+                    <li></li>
+                      <a href="/product/sorticontoir">
+                        <b class="text-primary bg-white rounded shadow p-2">
+                          Sortie codebar
+                        </b>
+                      </a>
+                    </li>
+                    <li>
+
+                    <li><a href="{% url 'sales:invoice_list' %}">
+                      List des bons
+                    </a></li>
+                    
+                   
+              </ul>
+            </div>
+            <div class="mt-auto p-2">
+              <!-- <strong style="font-size: 28px;color: #009639; font-weight: bolder;">FREE PALESTINE</strong> -->
+              <div class="d-flex">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/0/00/Flag_of_Palestine.svg" width="60">
+                <img src="https://upload.wikimedia.org/wikipedia/fr/thumb/0/0d/Hamas_logo.svg/langfr-800px-Hamas_logo.svg.png" width="60">
+                
+              </div>
+              <p>
+                  Version: 2.1.2 <br> @ADACHI systems
+              </p>
+          </div>
+ 
+      </div>
+      
+   
+  </div>
+    <div class="col-10 p-2 position-relative">
+      <section class="p-3">
+
+        {% block content %}{% endblock %}
+    </section>
+   
+    </div>
+
+    <!-- Actualiser -->
+    <div class="modal fade" id="tt" tabindex="-1" aria-labelledby="ttLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content bg-white">
+          <div class="modal-header">
+            <h5 class="modal-title" id="ttLabel">Inactive</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Actualiser la page <button onclick="location.reload()" class="btn fa fa-refresh"></button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+
+
+<!-- modals -->
+<!-- modal update products -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-body">
+          <form class="form-horizontal add-product-form" action="" method="post" autocomplete="off" enctype="multipart/form-data">
+            <div class="checkerror text-danger d-none">Deja existe</div>
+              <div class="form-group">
+                <strong>
+                  premium
+                </strong>
+                <select required class="form-control" name="updateexpensive">
+                  <option value="oui">oui</option>
+                  <option value="non" selected>Non</option>
+              </select>
+                  <input type="hidden" name="thiscategory">
+                  <div class="col-sm-12">
+                      {% csrf_token %}
+                      <label for="">Categorie</label>
+                      <select class="form-select checkref" required type="number" name="updatecategory">
+                          {% for i in children %}
+                          <option value="{{i.id}}">
+                              {{i.name}}
+                          </option>
+                          {% endfor %}
+                      </select><br>
+                      <div class="mb-3">
+                          <label for="">
+                              Image
+                          </label>
+                          <input type="file" class="form-control" name="updateimage">
+                      </div>
+                      <label><strong>Ref</strong></label>
+                      <input type="text" class="form-control product_name checkref" name="updateref" value=""><br>
+                      <label><strong>marks</strong></label>
+                      <input type="text" class="form-control" name="updatemarks" value=""><br>
+                      <label><strong>Vehicule</strong></label>
+                      <input type="text" class="form-control product_name" name="updatecar" value=""><br>
+                      <label><strong>Minimum</strong></label>
+                      <input type="text" class="form-control product_name" name="updateminimum" value=""><br>
+                      <!-- <label><strong> Prix ventes </strong></label>
+                      <input type="number" step="0.01" class="form-control product_name" name="updateprice" value="" ><br> -->
+                      <label><strong> Prix acht </strong></label>
+                      <input type="number" step="0.01" class="form-control product_name" name="updatepr_achat" value="" readonly><br>
+                      <label><strong> Forn </strong></label>
+                      <select required name="updateoriginsupp" class="form-select">
+                          <option value=""></option>
+                          {% for i in suppliers %}
+                          <option value="{{i.id}}">{{i.name}}</option>
+                          {% endfor %}
+                      </select>
+                      <br>
+                      <label><strong> Marque </strong></label>
+                      <select required name="updatemark" class="form-select checkref">
+                          <option value=""></option>
+                          {% for i in marks %}
+                          <option value="{{i.id}}">{{i.name}}</option>
+                          {% endfor %}
+                      </select>
+                      <br>
+
+                      <input type="hidden" name="retailer" value="{{ request.user.retailer_user.retailer.id }}">
+                      <input type="hidden" name="productid" value="">
+                      <button type="submit" id="save" class="btn btn-primary product-submit-btn w-100" style="float: right">Enregister</button>
+                  </div>
+              </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Close</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- image display modal -->
+<div class="modal fade" id="imagedisplaymodal" tabindex="-1" aria-labelledby="eimagedisplaymodalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-body text-center">
+          <img src="" alt="" class="imgproductmodal" style="max-width: 100%;">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--  duplicate modal -->
+
+<!-- add one product model -->
+<div class="modal fade" id="addoneproductmodal" tabindex="-1" aria-labelledby="eaddoneproductmodalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-body">
+          <form method="post" action="{% url 'product:addoneproduct' %}" enctype="multipart/form-data">
+              {% csrf_token %}
+              
+              <div class="mb-3">
+                  <label for="">Categorie</label>
+                  <select class="form-select checkref" required name="pcategory">
+                      <option value=""></option>
+                      {% for i in children %}
+                      <option value="{{i.id}}">
+                          {{i.name}}
+                      </option>
+                      {% endfor %}
+                  </select>
+              </div>
+              <div class="mb-3">
+                  <label for="">
+                      Image
+                  </label>
+                  <input type="file" class="form-control" name="image">
+              </div>
+
+              <div class="mb-3 row">
+                  <b class="text-center text-danger checkerror d-none">
+                      Deja existé
+                  </b>
+                  <div class="col-6">
+                      <label>
+                          Ref.
+                      </label>
+                      <input class="form-control checkref" required type="text" name="ref" >
+                  </div>
+                  <div class="col-6">
+                      <label>
+                          Marque
+                      </label>
+                      <select class="form-select checkref" required type="text" name="mark">
+                          <option value=""></option>
+                          {% for i in marks %}
+                          <option value="{{i.id}}">
+                              {{i.name}}
+                          </option>
+                          {% endfor %}
+                      </select>
+                  </div>
+              </div>
+              <!-- <div class="mb-3">
+                  <label>
+                      Article
+                  </label>
+                  <input class="form-control" required type="text" name="name" >
+              </div> -->
+              <div class="mb-3">
+                  <label>
+                      Fournisseur
+                  </label>
+                  <select class="form-select" required type="text" name="originsupp">
+                      <option value=""></option>
+                      {% for i in suppliers %}
+                      <option value="{{i.id}}">
+                          {{i.name}}
+                      </option>
+                      {% endfor %}
+                  </select>
+              </div>
+              <div class="mb-3">
+                  <label>
+                      Vehicule
+                  </label>
+                  <input class="form-control" required type="text" name="car" >
+              </div>
+              <div class="mb-3">
+                  <label for="">
+                      Prix ventes
+                  </label>
+                  <input required type="number" class="form-control" name="price" min="0" step="0.01">
+              </div>
+              <div class="mb-3">
+                  <label>
+                      Prix acht
+                  </label>
+                  <input type="number" required class="form-control" name="prachat" min="0" step="0.01">    
+              </div>
+              <div class="mb-3">
+                  <label for="">
+                      Stock
+                  </label>
+                  <input class="form-control" required type="number" name="stock" min="0">
+              </div>
+              
+              
+          
+              <button type="submit" class="btn btn-primary addoneproductbtn" disabled>Ajouter</button>
+          
+          </form>
+          
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- js placed at the end of the document so the pages load faster -->
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/select2.min.js' %}"></script>
+<script src="{% static 'js/alertify.min.js' %}"></script>
+
+
+
+<script>
+  var suggestions = ["CLAXSON", "TEMBEUR", "LAJOGE HUIL", "SIRVO EMB", "GUID TIGE VITASS", "BRA COMPLEMENT", "PLACA", "EQUILIBREUR LICULIBLOR", "RONDIL INJECTEUR", "POMPE AMORSAGE VANTOZ", "BAG DIRECTION", "STOP MOTOR VANTOZ", "MANO POMPE GASOIL", "CARCAS FILTER HUIL COMPLET", "PAPION", "RMANA", "LAMPE", "TUBE DE HUIL TURBO", "TEYO VASSE DEAU", "CAPTEU AIR PNEU", "AMBRACAM", "ROULMENT DEMARRORE", "ROULMENT DEMARRORE", "ROULMENT DEMARRORE", "ROULMENT DEMARRORE", "JOINT FILTER BV", "CLAPI EMBRYAGE", "SUPPORT BAR SOCOSS", "MANO FREIN", "DURITE CHOUFFAGE", "JOINT CELCETOURES", "VANTOUZE TURBO", "ROULMENT TENDEUR", "ROULMENT CLIMA", "ROULMENT MANCHO", "Radiateur, réaspiration des gaz d'échappement", "ATACH POMPE EMB", "HUIL BV", "AMORTISSEUR CAPOT", "N/C VITASS", "PORTE CHARBON", "AMORTISSEUR DIRECTION", "NEFLOR", "CARE CASSE POMPE EAU", "AGRAF CACHE MOTOR", "FIXIBLE EMBRYAGE", "BUTTE SUSPONSOIN AR", "FIXIBLE FRIEN", "BAG BIELL", "OPTIQUE", "LATRESSE CARTER", "FIXIBLE DINAMO", "CARE CASSE FILTER AIR", "TEMPERATUER", "ROULMENT AMORTISEUR", "VENTILATEUR", "CRIBEN POMPE DE HUIL", "N/C DEMARREUR", "MANO CLIM", "TUYAU POMPE EMBARYAGE", "MANO FILTER GASOIL", "KIT ROULMENT", "JOINT ADMITION", "JOINT PLACA", "FREDOIT", "FEUX ARRIRE", "MANO CARTER", "CARTER", "BAGUE FOURCHETTE", "bouchon de huile moteur", "HUILE MOTEUR", "CARCAS FILTER HUIL SEMPEL KHAWI", "LIVALVE INJECTEUR", "MANO ARANTI", "TUBE EAU", "cache amortisseur", "MANO STOP", "JOINT CHEMISE", "CROISILON DIRICTION", "CHEMISE", "AMORTISSEUR TENDEUR", "AX PIVO", "CARCAS AIR TURBO", "PINIO CHAIN", "COUP COURANT", "BAG AMBRACAM", "LAJOGE GASIO", "MANO ARRIERE", "ATACHE CABLE EMBRYAG", "Résistons", "AMORTISSEUR MALLA", "REPARTITEUR FRIEN", "FILL BOUGE", "CABLE VETASSE", "GLESIR", "COMONDO ELECTRIQUE", "BOTON GLASSE", "ROULMENT CARDANT", "DURIT NEFLOUR", "PISTON POMPE AGASIOL", "CABLE ACC", "SUPPORT ECHAPPEMENT", "DURITE AIR", "AX POMPE HUIL", "IDWA", "BOCHON RADIATEUR", "Couvert cache soupape", "GOUPELL DE RUE", "CAPTEUR ABS", "TURBO", "POUSSOIR ED SOUPAPE", "PINIO CONTEUR", "BOUCHON VASSE DENT MOTOR", "DIMAROR", "DIBIMTER", "MOTOR VASE DE", "POMPE ESSNCE", "POINI", "PORT BUTTE", "MANCHO ESEAU", "JOINT POMPE HUIL", "FLECTOR DIRECTION", "N/C INJECTEUR", "VAN EGR", "POMPE GASOIL", "FICHE CONTACT", "ALTIRNATEUR", "CLIMAIRE DIRECTION", "ROULMENT ALTIRNATEUR", "SOUFFLET CARDENT", "ROULMENT B.V", "SPIRAL", "JOINT REFRIGERANT D HUILE", "CAL ATERAL", "JAUGE DE HUILE", "COLECTEUR", "FILTER ESSENCE", "N/C LIESEU ARRIERE", "FILTER B.V", "POMPE OXILER", "INJECTEUR", "BOUGIE PRECHAUFFAGE", "C/P", "MANO HUIL", "CHARBON", "N/C EMBRYAGE", "GUIDE SOUPAPE", "CAOUATCHO CLEMAILLERE", "TETE POMPE GASOIL", "COUPLEUR", "JOINT CARTER", "FLECTEUR CARDENT", "POULIE EMB ALTERNATEUR", "BOUGIE ALLUMAGE ESSANCE", "SUPPORT CARDENT", "MANO COMORAI", "INDUI DEMAROR", "AX FISI", "RELAIS DIMAROR", "CROISILLON CARDAN", "BOTON FRIEN AMAN", "GUIDE LAJOJE HUIL", "VASE DE HUILE", "BIDALLE EMB", "TUBE RETOUR", "TRIANGLE", "POMPE HUIL", "PIVO", "CULBUTEUR", "REGULATEUR", "BOCHON FILTER HUIL", "TETE FILTER GASOIL", "POULIE VILBROCAL", "CAPTEUR", "CABLE FRIEN", "KIT DISTRUBITION", "ARRETE HUIL INJECTEUR", "DISQUE EBMRYAGE", "MANO TEMPERATURE", "ARRET HUIL DEVER", "ROTROVISEUR", "CABLE CONTEUR", "POMPE ASSISTÉE", "PORCHETTE JOINT", "SOUPAPE", "KIT EMBRYAGE", "REGULATEUR TURBO", "VOLLANT MOTOR", "CHAINE DISTRIBUTION", "CARDANT", "DURITE EAU", "CABLE EMBRYAGE", "PLATEAU EMBRYAGE", "FOURCHETTE EMBRYAGE", "VASE DE EAU MOTOR", "TETE CARDAN", "COURROIE ALTIRNATEUR", "TEMOIN DE PLAQUETTE", "PIPE EAU THERMOSTAT", "CHAPPE DIRECTION", "BUTTE EMBRYAGE", "TIGE VITASSE", "MOYAU", "BOBINE D ALLUMAGE", "POMPE EAU", "REFRIGERANT d'huile", "bras suspension", "DURITE TURBO", "ARRET D HUILE SOUPAPE", "ROULMENT", "SILENTBLOC", "POMPE EMB", "SUPPORT MOTOR", "BENDEX", "TENDEUR", "BIELLETTE DIRECTION", "PISTON", "FILTER CLIM", "FILTER GASOIL", "FILTER AIR", "JOINT CACHE SOUPAPE", "SEGMENT", "JOINT CULASSE", "FILTER HUILE", "C/B", "SOUFLET DIRECTION", "ROTULE", "SUPPORT AMORTISSEUR", "AMORTISSEUR", "CAOUATCHO BAR SOCOS", "BIELLETTE STABILISATRICE", "N/C FREIN", "POMPE FREIN", "CYLINDEI DE FREIN", "DISQUE FREIN", "PLAQUETTE DE FREIN", "HUILE DE FRIEN", "FIXATION", "FIXATION PARE-CHOC"]
+    {%for i in categorynames%}
+    suggestions.push("{{i.name}}")
+    {% endfor %}
+  function autocompletename(e){
+      const query = $(e.target).val().toLowerCase();
+      console.log('www d', query)
+      const filtered = suggestions.filter(item => item.toLowerCase().startsWith(query));
+      const container = $('.autocomplete-container');
+      container.html('')
+      console.log('WW', filtered.length, filtered.length==0 || query.length==0, filtered.length==0, query.length==0)
+      if (filtered.length==0 || query.length==0){
+        console.log('ddlldd')
+        return
+      }
+      //container.removeClass('d-none')
+      filtered.forEach(item => {
+      const div = document.createElement('div');
+      div.textContent = item;
+      div.classList.add('autocomplete-item');
+      div.addEventListener('click', () => {
+          $(e.target).val(item);
+          container.html('');
+          container.addClass('d-none')
+      });
+      container.append(div);
+      });
+      //console.log(filtered[0])
+      //$(this).val(filtered[0])
+      
+    }
+  function getfacturedate(event){
+    facturenumber=$(event.target).val()
+    $.get('/product/getfacturedate', {'facturenumber':facturenumber}, (data)=>{
+      $('.addstock').val(data.date)
+      $('.datefactureinp').val(data.date)
+      $('.totalfactureinp').val(data.total) 
+      $('.addprice').val(data.total)
+    })
+  }
+  function printcodebar(event, productid){
+    console.log('>> gggprint', $(event.target).parent().find('.codebarprice').val(), $(event.target).closest('tr').find('.originsupp').text().trim())
+    
+    codebarprice=$(event.target).parent().find('.codebarprice').val()
+    supplier=$('.supplierselect').val()||$(event.target).closest('tr').find('.originsupp').text().trim()
+    console.log('>> supplier', supplier)
+    //codebarqty=$('.codebarqty').val()
+    if (codebarprice=="" || codebarprice==0){
+      $('.codebarprice').addClass('border-danger')
+      return
+    }
+    // $('.codebarprice').removeClass('border-danger')
+    // if (codebarqty=="" || codebarqty==0){
+    //   $('.codebarqty').addClass('border-danger')
+    //   return
+    // }
+    // $('.codebarqty').removeClass('border-danger')
+
+    url = window.location.pathname.split( '/' );[0]
+    // var myWindow = window.open('http://'+window.location.href.split( '/' )[2]+'/product/printbarcodes?productid={{product.id}}&qty='+codebarqty+'&price='+codebarprice, '', 'width=900,height=900');
+    var myWindow = window.open('http://'+window.location.href.split( '/' )[2]+'/product/printbarcodes?productid='+productid+'&price='+parseInt(codebarprice)+'&supplier='+supplier, '', 'width=900,height=900');
+
+    myWindow.focus();
+
+    myWindow.addEventListener('load', function() {
+    console.log('New window loaded.');
+
+    // Wait for 5 seconds before printing
+    setTimeout(function() {
+    try {
+      myWindow.print();
+      console.log('Print command issued.');
+      myWindow.close();
+      console.log('New window closed.');
+    } catch (e) {
+      console.error('Failed to print and close the window:', e);
+    }
+    }, 300); // 1000 milliseconds = 1 seconds
+    }, false);
+    
+  }
+  function addtopanier(event, itemid){
+    console.log('>>> addtopanier')
+    $.get('/product/panier', {'itemid': itemid}, (data)=>{
+      if (!data.success){
+        console.log('>> not success')
+        return
+      }
+      parent=$(event.target).parent().parent()
+      background=parent.css('background')
+      pdctid=parent.attr('pdctid')
+      commanded=parent.attr('commanded')
+      ctgid=parent.attr('ctgid')
+      suppid=parent.attr('suppid')
+      ref=parent.find('.product_ref').text()
+      name=parent.find('.product_name').text()
+      qty=parent.find('.qty').text()
+      mark=parent.find('.marq').text()
+      supplier=parent.find('.supplier').text()
+      console.log(ref, name, qty)
+      counter=parseInt($('.selectedpdcts').text())
+      $('.selectedpdcts').text(counter+1)
+      tr=`
+      <tr style="background:${background};">
+        <td>${ref} - ${name}</td>
+        <td>${qty}</td>
+        <td>${mark}</td>
+        <td>${supplier}</td>
+        <td class="">
+          ${commanded=='True'?'<i class="fa fa-check text-success fa-2x btn validcommand" data-itemid="${pdctid}"></i>':''}
+          
+          <i class="fa fa-times text-danger bg-danger fa-2x btn" id="${pdctid}" categoryid="${ctgid}" onclick="removefromcart(event, ${pdctid})"></i>
+          
+          <!-- delete item is commented for now cause of the factorizaation -->
+          <!-- <button class="btn btn-danger btn-xs deleteproduct" title="Supprimer" data-id="${pdctid}"><i class="fa fa-trash-o"></i></button> -->
+
+          <!-- old code
+          <a href=''product:add_product_items' product_id=item.id %}"><button class="btn btn-primary btn-xs">الدخول</button></a>
+          <a href=''product:item_details' pk=item.id %}"><button class="btn btn-success btn-xs"><i class="fa fa-eye"></i></button></a>-->
+          <div class="updatesupplier d-none">
+              <div class="form-group">
+                  {% csrf_token %}
+                  <select name="supplier" required class="form-select mb-3 select2">
+                      {% for supplier in suppliers %}
+                          <option value="${suppid}">${supplier}</option>
+                      {% endfor %}
+                  </select>
+                  <input type="hidden" name="distination" value="commande">
+                  
+                  <button class="btn btn-primary" onclick="updatesuppcomnd(event, ${pdctid})">Ajouter</button>
+              </div>
+              <!-- <form class="form-horizontal add-ledger-form addsupplierform" action="{% url 'product:updatecommande' %}" method="post" autocomplete="off">
+              </form> -->
+          </div>
+        </td>
+      </tr>
+      `
+
+      $('.panieritems').append(tr)
+    })
+    
+  }
+  function makeitemcommanded(event, id){
+    $.post("{% url 'product:validcommande' %}",
+      {
+        'itemid': id,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+      },
+      (data)=>{
+        $(event.target).parent().parent().css('background-color', 'yellowgreen')
+        $(event.target).remove()  
+      }
+    )
+  }
+
+  function cancelcmndnlow(event, productid, categoryid){
+    $('.getsimillarscommand').html('')
+    $.post('/product/cancelcommande/', {'id': productid,'categoryid':categoryid, 'csrfmiddlewaretoken': '{{ csrf_token }}',}, (data)=>{
+      console.log(data.getsimillarscommand)
+      //getlowbycategory(categoryid)
+      $(event.target).parent().html(`<div class="">
+        <input placeholder="Quantité" type="number" class="form-control" data-id="${productid}" data-categoryid="${categoryid}" onchange="commandinputinlow(event)">
+      </div>
+      <div class="badge bg-primary getsimillarscommand">
+        ${data.getsimillarscommand}
+      </div>`)
+      // if ($('[name="supplier"]').val()=='0'){
+      //     $(event.target).parent().html(`<input disabled="disabled" placeholder="Quantité" type="number" class="form-control qtycommand" onchange="commandinputinlow(event)" data-id="${productid}" data-categoryid="${categoryid}">`)
+      // }else{
+      //   $(event.target).parent().html(`<input  placeholder="Quantité" type="number" class="form-control qtycommand" onchange="commandinputinlow(event)" data-id="${productid}" data-categoryid="${categoryid}">`)
+        
+      // }
+    })
+      console.log($(event.target).parent())
+    }
+  function commandinputinlow(event){
+    let itemid=$(event.target).data('id')
+    let categoryid=$(event.target).data('categoryid')
+    let supplier=$('[name="supplier"]').val()
+    let suppliername=$('[name="supplier"]option:selected').text()
+    if(supplier==0){
+        $(event.target).css({
+            'border': '1px solid red'
+        })
+        return
+    }
+    $(event.target).css({
+      'border': '1px solid green'
+    })
+    qty=$(event.target).val()
+    if (qty=='' || qty==0 || supplier=="0"){
+        $(event.target).css({
+            'border': '1px solid red'
+        })
+        return
+    }
+    $.ajax({
+        url: "{% url 'product:commandproduct' %}",
+        type: "POST",
+        data: {
+            'itemid': itemid,
+            'qty': qty,
+            'supplier': supplier,
+            'categoryid': categoryid,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function (data) {
+            if(data.valid){
+                $('.ordered').text(parseInt($('.ordered').text())+1)
+                //getlowbycategory(categoryid)
+                $(event.target).parent().html(`<i class="fa fa-check text-success fa-2x" onclick="makeitemcommanded(event, '${itemid}')"></i><button class="btn fa fa-times  text-danger border" type="button" dataid="${itemid}" onclick="cancelcmndnlow(event, '${itemid}', '${categoryid}')"></button> ${$('[name="supplier"] option:selected').text().trim()}`)
+            }
+            else{
+                alert('Erreur')
+            }
+        }
+    })
+  }
+  function imagedisplaybtn(event){
+    console.log($(event.target))    
+    img=$(event.target).parent().find('.imgproduct').attr('src')
+    console.log(img)
+    $('.imgproductmodal').attr('src', img)
+  }
+ var inactivityTime = 0;
+ var inactivityTimepassword = 0;
+const makeurgent=(id)=>{
+  console.log(id)
+  $.post('/product/makeurgent', {'id':id, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, (data)=>{
+    if (data.valid==true){
+      location.reload()
+    }else{
+      console.log('err')
+    }
+  })
+}
+function makeurgentincontoir(event, id){
+  $.post('/product/makeurgent', {'id':id, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, (data)=>{
+    $(event.target).remove()
+  })
+}
+function checkForInactivity(t) {
+  var inactivityInterval = setInterval(function() {
+    inactivityTime += 1;
+    if (inactivityTime > t) {
+      clearInterval(inactivityInterval);
+      $('.passwordinput').on('input', function(){
+        $(this).focus()
+        if ($(this).val()=='3214'){
+          $('.passwordinput').val('')
+          $('.password').addClass('d-none')
+          $('.appcontainer').css('filter', 'blur(0)')
+          inactivityTime=0
+          checkForInactivity(20)
+        }
+      })
+
+      // Create a modal dialog
+      // var modal = new bootstrap.Modal(document.getElementById('tt'), {
+      //   keyboard: false
+      // })
+      // modal.show()
+      // // Handle user's response to the modal dialog
+      // var myModalEl = document.getElementById('tt');
+      // var hiddenHandler = function (event) {
+      //   modal.hide();
+      //   inactivityTime = 0;
+      //   myModalEl.removeEventListener('hidden.bs.modal', hiddenHandler);
+      //   checkForInactivity(60);
+      // };
+      // myModalEl.addEventListener('hidden.bs.modal', hiddenHandler);
+    }
+  }, 1000);
+}
+
+
+function checkForInactivitypassword(t) {
+  var inactivityInterval = setInterval(function() {
+    inactivityTimepassword += 1;
+    $(document).mousemove(function (e) {
+        inactivityTimepassword = 0;
+    });
+    $(document).keypress(function (e) {
+        inactivityTimepassword = 0;
+    });
+    if (inactivityTimepassword > t) {
+      clearInterval(inactivityInterval);
+
+      // show password
+      $('.password').removeClass('d-none')
+      $('.appcontainer').css('filter', 'blur(5px)')
+      // Handle user's response to the modal dialog
+      $('.passwordinput').focus()
+      $('.passwordinput').on('input', function(){
+        if ($(this).val()=='3214'){
+          $('.passwordinput').val('')
+          $('.password').addClass('d-none')
+          $('.appcontainer').css('filter', 'blur(0)')
+          inactivityTimepassword=0
+          checkForInactivitypassword(t)
+        }
+      })
+      
+    }
+  }, 1000);
+}
+
+const darkmode=()=>{
+    let darkMode = localStorage.getItem('darkMode');
+    console.log(darkMode)
+      // check if dark mode is enabled
+      // if it's enabled, turn it off
+      // if it's disabled, turn it on
+      if(darkMode=='true'){
+        $('body').css('background-color', '#1a1a1a');
+        $('table').removeClass('table-striped').css('color', 'white')
+        $('.bg-white').removeClass('bg-white').addClass('bg-dark text-white')
+        $('.black-bg').css('background-color', '#333333')
+        $('.btn').addClass('btn-dark text-white')
+      }else{
+        $('body').css('background-color', 'white');
+        $('table').addClass('table-striped').css('color', 'black').removeClass('table-dark')
+        $('.bg-dark').removeClass('bg-dark text-white').addClass('bg-white')
+        $('.black-bg').css('background-color', 'blue')
+        $('.btn').removeClass('btn-dark text-white')
+      }
+  }
+
+    $(document).ready(function(){
+      //darkmode()
+      $('.themetoggler').on('click', ()=>{
+          var darkMode = localStorage.getItem('darkMode') === 'true';
+          // toggle between true and false
+          darkMode = !darkMode;
+          // set darkMode value to local storage
+          localStorage.setItem('darkMode', darkMode);
+          darkmode()
+      })
+
+      
+      $(this).on('mousemove keydown scroll', function() {
+        inactivityTime = 0;
+      });
+      //checkForInactivity(20);
+      checkForInactivitypassword(300)
+      $('.select2').select2();
+      //   function backupDatabase() {
+      //     var currentTime = new Date().getHours();
+      //     if (currentTime == 16) { // check if it's 4:00 PM
+      //         $.ajax({
+      //             type: "POST",
+      //             url: "/makebackup",
+      //             success: function(response) {
+      //                 console.log("Database backed up successfully.");
+      //             },
+      //             error: function(response) {
+      //                 console.log("An error occurred while trying to backup the database.");
+      //             }
+      //         });
+      //     }
+      // }
+
+      // setInterval(backupDatabase, 60000); // call the function every minute
+      $(".search-invoice").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("table tbody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+
+    $(document).keydown(function(e) {
+      // Use e.which to determine which key was pressed
+      if (e.which === 226 && e.ctrlKey) {
+        // used to show add product modal
+        // var modal = new bootstrap.Modal(document.getElementById('addoneproductmodal'), {
+        // keyboard: false
+        // })
+        // modal.show()
+        window.location.href='/product/items/productslistbycategory/'
+      }
+      if (e.which === 91 && e.ctrlKey) {
+        // used to show add product modal
+        // var modal = new bootstrap.Modal(document.getElementById('addoneproductmodal'), {
+        // keyboard: false
+        // })
+        // modal.show()
+        window.location.href='/'
+      }
+      if (e.which === 16 && e.ctrlKey) {
+        // Perform action when Ctrl+S is pressed
+        window.location.href='/product/items/lowstock/'
+      }
+      if (e.which === 18 && e.ctrlKey) {
+        // Perform action when Ctrl+S is pressed
+        window.location.href='/product/supply/'
+      }
+    });
+
+</script>
+{% block scripts %}
+{% endblock %}
+
+</body>
+</html>

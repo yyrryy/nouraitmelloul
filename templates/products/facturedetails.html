@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture_{{facture.facture_no}}</title>
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <style>
+      
+    </style>
+</head>
+<body>
+    <div class="d-flex justify-content-between border-b">
+      <a class="btn btn-sm " href="/product/listfacturesnonpaye">
+        <i class="fa fa-arrow-left mr-1"></i> Retour </a>
+        <!-- <a class="btn btn-sm " onclick="$('.ice').toggleClass('d-none')">ICE </a> -->
+        <div class="d-flex">
+          <button class="btn btn-primary" onclick="$($('th')[1]).toggleClass('d-none'); $($('td')[1]).toggleClass('d-none')">BL</button>
+          <button class="btn btn-primary" onclick="$($('th')[0]).toggleClass('d-none'); $($('td')[0]).toggleClass('d-none')">BC</button>
+          <button class="btn btn-primary" onclick="$($('th')[5]).toggleClass('d-none'); $($('td')[5]).toggleClass('d-none')">MTRC</button>
+          <button class="btn btn-primary" onclick="$('.regledetails').toggleClass('d-none')">Reglé details</button>
+        </div>
+        
+        <div class="d-flex" style="width: 32em;">
+          <input type="text" class="form-control note w-100" value="{{facture.note}}">
+          <button class="btn btn-success" onclick="reglefacture('{{facture.id}}')">Reglé</button>
+        </div>
+          <!-- <div class="accordion col-8" id="accordionExample">
+            
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button bg-white collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  +Articles
+                </button>
+              </h2>
+              <div id="collapseTwo" class="accordion-collapse collapse " aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                <div class="accordion-body bg-white">
+                    <div class="bg-white">
+                      <div class="mb-3 row p-2 rounded" style="background:rgb(34, 25, 71);">
+                        <div class="col-2 ">
+                            <input class="form-control bc " name="bc" placeholder="N° Bon commande" autocomplete="on">
+                        </div>
+                        <div class="col-2 ">
+                            <input class="form-control bl " name="bl" placeholder="N° Bon Livraison" autocomplete="on">
+                        </div>
+                        <div class="itemsselectholder col-3">
+                            <input class="form-control article" name="article" placeholder="Article" autocomplete="on">
+                        </div>
+                        <div class="col-1">
+                                    
+                            <input type="number" class="addqtyinp form-control" placeholder="Qty">
+                            <div class="addstock "></div>
+                        </div>
+                        <div class="col-1">
+                            
+                            <input type="number" class="addpriceinp form-control" placeholder="Prix">
+                            <div class="addprice "></div>
+                        </div>
+                        <div class="col-2 ">
+                            <input class="form-control mtrc " name="mtrc" placeholder="N° imtrc" autocomplete="on">
+                        </div>
+                        <div class="col-1">
+            
+                            <button class="btn btn-primary w-100" onclick="addrow()">+</button>
+                        </div>
+                        <input type="text" class="addname" hidden>
+                    </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            
+          </div> -->
+          <a class="btn btn-sm " href="#" data-abc="true" onclick="PrintInvoice('invoice')">
+            <i class="fa fa-download mr-1"></i> Print </a>
+            
+            <a class="btn btn-sm " href="/product/modifierfacture?id={{facture.id}}" data-abc="true">
+              <i class="fa fa-print mr-1"></i> Modifier </a>
+          
+            
+        
+        
+      </div>
+    <div class="container-fluid mt-100 mb-100 mt-2 ">
+        <div id="ui-view">
+          <div class="border" id="invoice">
+              <div class="d-flex justify-content-between px-3 mt-3">
+                <div class="border-end col-6">
+                  <h1 class="underline">
+                    NOUR PIECES AUTO
+                  </h1>
+                  <ul style="font-size: 12px; margin-bottom: 0;">
+                    <li>
+                      <strong>PIECES DE RECHANGE</strong>
+                    </li>
+                    <li>
+                      <strong>
+                        HUILES ET LUBRIFIANTS
+                      </strong>
+                    </li>
+                    <li>
+                      <strong>ACCESSOIRES AUTO</strong>
+                    </li>
+                  </ul>
+                  
+                  
+                  
+                </div>
+
+                <div>
+                  <img src="/static/img/logo.jpeg" alt="" width="200" height="100">
+                  <!-- <h2>
+                    Facture
+                  </h2> -->
+                  
+                </div>
+                
+              </div>
+              <div class="d-flex justify-content-between px-3">
+                
+                <div class="col-6">
+                  <strong >CLIENT: {{ facture.client.customer_name.upper }}.</strong>
+                  {% if facture.client.ice %}
+                  <div>
+                    <strong>ICE: {{ facture.client.ice }}</strong>
+                  </div>
+                  {% endif %}
+                  
+                  
+                </div>
+                <div>
+                  <div>
+                    <strong>
+                      Date: {{facture.date | date:'d/m/Y'}}
+                    </strong>
+
+                  </div>
+                  <strong>
+                    Facture N°: {{facture.facture_no}}
+                  </strong>
+                  <!-- {% if facture.client.address %}
+                  <div>
+                    <strong>Adresse: {{ facture.client.address }}</strong>
+                  </div>
+                  {% endif %} -->
+                </div>
+              </div>
+              <div class="px-3">
+                <table class="table table-bordered text-center" style="border-color: black;" >
+                  <thead style="font-size: 12px;">
+                    <tr>
+                      <!-- {% if bc %}
+                      <th class="center d-none" style="width: 7%;">B.C</th>
+                      {% endif %} 
+                       {% if bl %} 
+                      <th class="center d-none" style="width: 7%;">B.L</th>
+                       {% endif %} -->
+                      <th class="center d-none" style="width: 7%;">B.C</th>
+                      <th class="center d-none" style="width: 7%;">B.L</th>
+                      <th class="center " style="width: 7%;">Qté</th>
+                      <th class="center">Designation</th>
+                      <th class="center" style="width: 10%;">Prix unit.</th>
+                      <!-- {% if mtrc %}
+                      <th class="center">MTRC</th>
+                      {% endif %} -->
+                      <th class="center d-none">MTRC</th>
+                      <th class="center" style="width: 10%;">Mantant</th>
+                    </tr>
+                  </thead>
+                  <tbody style="font-size: 13px;">
+                    <tr>
+                      
+                      <td class="p-0 d-none" >
+                        {% for i in items %}
+                        <strong style="margin-bottom: 5px;">
+                          {{ i.bc}}
+                        </strong><br>
+                        <!-- {% if forloop.counter|divisibleby:47 %}
+                          <br>
+                        {% endif %} -->
+                        {% endfor %}
+                      </td>
+                      
+                      <td class="p-0 d-none" >
+                        {% for i in items %}
+                        <strong style="margin-bottom: 5px;">
+                          {{ i.bl}}
+                        </strong><br> 
+                        <!-- {% if forloop.counter|divisibleby:47 %}
+                          <br>
+                        {% endif %} -->
+                        {% endfor %}
+                      </td>
+                      
+                      
+                      <td class="p-0" style="height: 145mm;">
+                        {% for i in items %}
+                        <strong style="margin-bottom: 5px;" >
+                          {{ i.qty|floatformat:-2}}
+                        </strong><br> 
+                        <!-- {% if forloop.counter|divisibleby:47 %}
+                          <br>
+                        {% endif %} -->
+                        {% endfor %}
+                      </td>
+                      <td class="p-0" class="" ondblclick="deletefacturetiem('{{i.id}}')">
+                        {% for i in items %}
+                        <strong style="margin-bottom: 5px;" >
+                          {{i.article.upper}}
+                        </strong><br>
+                        <!-- {% if forloop.counter|divisibleby:47 %}
+                          <br>
+                        {% endif %} -->
+                        {% endfor %}
+                      </td>
+
+                      <td class="p-0" class="center">
+                        {% for i in items %}
+                        <strong style="margin-bottom: 5px;" >
+                          {{i.price|floatformat:2}}
+                        </strong><br>
+                        <!-- {% if forloop.counter|divisibleby:47 %}
+                          <br>
+                        {% endif %} -->
+                        {% endfor %}
+                      </td>
+                      
+                      <td class="p-0 d-none">
+                        {% for i in items %}
+                        <strong style="margin-bottom: 5px;">
+                          {{i.mtrc}}
+                        </strong><br>
+                        <!-- {% if forloop.counter|divisibleby:47 %}
+                          <br>
+                        {% endif %} -->
+                        {% endfor %}
+                      </td>
+                      <td class="p-0" >
+                        {% for i in items %}
+                        <strong style="margin-bottom: 5px;" >
+                          {{ i.total|floatformat:2 }}
+                        </strong><br>
+                        <!-- {% if forloop.counter|divisibleby:47 %}
+                          <br>
+                        {% endif %} -->
+                        {% endfor %} 
+                      </td>
+                    </tr>
+                    
+                    
+                    
+                  
+                  <!-- <tr>
+                      <td colspan="2"></td>
+                      <td>TVA</td>
+                      <td>{{tva}} Dh</td>
+                  </tr>
+                  <tr>
+                      <td colspan="2"></td>
+                      <td>Total TTC</td>
+                      <td>{{totalttc}} Dh</td>
+                  </tr> -->
+                  </tbody>
+                  
+                </table>
+
+              </div>
+              
+              <div class="foooterfacture w-100 p-5 pt-0">
+                <div class="row">
+                  <div class="col-8">
+                    arrêté la presenté facture à la somme de: <br>
+                      <strong class="frenchword text-uppercase"></strong>
+                      <br>
+                      {% if facture.note %}
+                      <strong class="text-uppercase regledetails">-{{facture.note}}</strong>
+                      {% endif %}
+                    </div>
+                  <div class="d-flex flex-column col-4" >
+                    <div class="p-2 d-flex justify-content-between">
+                      <p>Total</p>
+                      <p>
+                        {{facture.total|floatformat:2}}
+                      </p>
+                    </div>
+                    <div class="p-2 d-flex justify-content-between" style="border: 1px solid; font-size: 16px;">
+                      <strong>Total Net à payé</strong>
+                      <strong>
+                        {{facture.total|floatformat:2}}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+                <div class="text-center" style="font-size: 12px;">
+                    Adresse: N° 90 BLOC 4 ROUTE DE BIOUGRA AIT MELLOUL 
+                    TEL: 05 28 24 40 70 / 05 28 30 82 84 
+                    EMAIL: NOURPIECESSAUTO@GMAIL.COM <br>
+                    PATENTE: 49804975 
+                    {% if facture.client.ice %}
+                    <span class="ice">
+                      ICE: 000506046000081
+                    </span>
+                    {%endif%}
+                    <div class="">
+                      <img src="/static/img/p1.jpeg" width="75">
+                      <img src="/static/img/p2.jpeg" width="75">
+                      <img src="/static/img/p3.jpeg" width="75">
+                      <img src="/static/img/p4.jpeg" width="75">
+                      <img src="/static/img/p5.jpeg" width="75">
+                    </div>
+                </div>
+              </div> 
+          </div>
+            
+        </div>
+    </div>
+</body>
+<script src="{% static 'js/jquery.min.1.7.js'%}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+<script src="/static/js/alertify.min.js"></script>
+<script src="/static/js/jquerySpellingNumber.js"></script>
+<script>
+  function reglefacture(id){
+    note=$('.note')
+    if (note.val()==''){
+      note.addClass('bg-danger')
+      return
+    }
+    note.removeClass('bg-danger')
+    $.get('/product/reglefacture', {'id':id, 'note':note.val()}, (data)=>{
+      location.reload()
+    })
+  }
+  function deletefacturetiem(event, id, factureid){
+    alertify.confirm('Supprimer?', function(){
+      $.get('/product/deletefacturetiem', {
+        'id':id,
+        'facture':factureid
+      })
+    }, function(){}, )
+  }
+  function addrow(){
+            
+            parentdiv=$(this).parent().parent()
+            
+            
+             // first time adding to localstorg
+            qtyinpadd=$('.addqtyinp').val()
+            priceinpadd=$('.addpriceinp').val()
+            article=$('.article').val()
+            bc=$('.bc').val()
+            bl=$('.bl').val()
+            mtrc=$('.mtrc').val()
+            total=(qtyinpadd*priceinpadd).toFixed(2)
+            if (article=='' || priceinpadd=='' || qtyinpadd==''){
+                alertify.error('Champs vide')
+                return
+            }
+            $.get('/product/addfactureitem', {'factureid':'{{facture.id}}', 'article':article, 'qty':qtyinpadd, 'price':priceinpadd, 'total':total, 'bl':bl, 'bc':bc, 'mtrc':mtrc}, (data)=>{
+              location.reload()
+            })
+          
+            
+            
+        //   if (pdcts.includes(id)){
+        //     console.log('in locals')
+        //     dx=pdcts.indexOf(id)
+            
+        //     // get index of id
+            
+            
+        //     bonitems[dx].qty=parseInt(bonitems[dx].qty)+1
+        //     pricesfromlocalstorage=bonitems[dx].prices
+        //     pricesfromlocalstorage.push((parseInt(qtyinpadd)*parseFloat(priceinpadd)).toFixed(2))
+        //     bonitems[dx].prices=pricesfromlocalstorage
+        //     // insert it in index to remain the same order, order is important here
+        //     localStorage.setItem('bonitems',JSON.stringify(bonitems))
+           
+        //     let qtyinput=$(`#itemrow${id}`).find('.qty')
+        //     let total=$(`#itemrow${id}`).find('.total')
+        //     let price=$(`#itemrow${id}`).find('.price')
+        //     // to calculate ponire we need to store the qtys*prices
+        //     prices=JSON.parse(price.attr('prices'))
+        //     prices.push((parseInt(qtyinpadd)*parseFloat(priceinpadd)).toFixed(2))
+        //     sum=0
+        //     for (i of prices){
+        //         sum+=i
+        //     }
+        //     newqty=parseInt(qtyinput.val())+parseInt(qtyinpadd)
+        //     pondir=sum/newqty
+        //     qtyinput.val(newqty)
+        //     price.val(pondir)
+        //     total.text(sum)
+        //     $(`#itemrow${id}`).css('background', 'greenyellow')
+        //     setTimeout(() => {
+        //         $(`#itemrow${id}`).css('background', 'none')
+        //     }, 2500);
+        //     jQuery().invoice().init
+
+        //     return
+        //   }
+        
+        
+        // emptying the fields
+        
+
+    }
+
+  function PrintInvoice(divName){
+         var printContents = document.getElementById(divName).innerHTML;
+         var originalContents = document.body.innerHTML;
+         document.body.innerHTML = printContents;
+         //$('body').css('font-size', '12px')
+         //$('.head').addClass('')
+        //  $('table').css('font-size', '9px');
+         //$("table > thead > tr > th").css('padding', '0px');
+         //$("table > tbody > tr > td").css('padding', '0px');
+         //$('body').addClass('d-flex flex-column vh-100')
+         //$('.foooterfacture').addClass('mt-auto');
+         window.print();
+         document.body.innerHTML = originalContents;
+    }
+    $('.frenchword').text($.spellingNumber({{facture.total|floatformat:2}}, {
+    lang:'fr',
+    wholesUnit:"Dirhams",
+    fractionUnit:"cents",
+    digitsLengthW2F: 2,
+    decimalSeperator:"et"
+
+  }))
+</script>
+</html>

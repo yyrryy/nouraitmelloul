@@ -1,0 +1,371 @@
+{% extends 'base.html' %}
+{% block menu_ledger %}active{% endblock %}
+{% block submenu_customer_ledger %}active{% endblock %}
+
+{% block content %}
+<!-- add payments model -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        
+        <div class="modal-body">
+            <form class="form-horizontal add-ledger-form" action="{% url 'product:addpaymentsupplier' id=bon.id %}" method="post" autocomplete="off">
+                <div class="form-group">
+                    {% csrf_token %}
+                    <label>
+                        <strong>Mantant</strong>
+                    </label>
+                    <input type="number" step="0.01" class="form-control customer amount" name="amount" required>
+                    <br>
+                        <label>
+                        <strong>info</strong>
+                        </label>
+                        
+                        <textarea class="form-control details" name="details" required></textarea>
+                        
+                        
+                        <br>
+                        
+                        <br>
+                        
+                        <button type="button" class="btn btn-primary addpaymentbtn">Enregistrer </button>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          
+        </div>
+      </div>
+    </div>
+</div>
+
+
+
+<!-- update lines in bon -->
+<div class="modal fade" id="updatebonlinemodal" tabindex="-1" aria-labelledby="updatebonlinemodalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+            <form action="{% url 'product:updatebonline' id=bon.id %}" method="post" autocomplete="off">
+                <div class="form-group">
+                    {% csrf_token %}
+                    <input type="text" name="article" class="form-control article" readonly>
+                    <input type="hidden" class="itemid" name="itemid">
+                    <br>
+                    <label>
+                        <strong>Prix unit.</strong>
+                    </label>
+                    <input type="number" step="0.01" name="price" class="form-control price calculate" required>
+                    <br>
+
+                    <label>
+                        <strong>Qté</strong>
+                    </label>
+                    <input type="number" step="0.01" name="qty" class="form-control qty calculate" required>
+                    <br>
+
+                    <label>
+                        <strong>Remise %</strong>
+                    </label>
+                    <input type="number" step="0.01" name="remise" class="form-control remise calculate" required>
+                    <br>
+
+                    <input type="text" name="total" class="form-control total" readonly>
+                    <br>
+
+                        
+                        
+                    <button class="btn btn-primary w-100">Enregistrer </button>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<!-- info -->
+<div class="mb-3">
+    <div class="bg-white rounded shadow p-2">
+        <h4 class="mb-3 p-2">
+            BON ENTREE N° {{bon.nbon}}
+        </h4>
+        <table class=" table table-advance table-bordered">
+            <thead>
+                <th>
+                    Fournisseur
+                </th>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Mantant
+                </th>
+                <th>
+                    Rest
+                </th>
+    
+            </thead>
+            <tbody class="ledger-table-body">
+                
+            <tr>
+                <td class="supplier">{{bon.supplier.name}}</td>
+                <td>{{bon.date|date:"H:i d/m/Y"}}</td>
+                <td id="grandTotal">{{bon.total}}</td>
+                <td>{{bon.rest}}</td>
+            </tr>
+            
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- articles -->
+<div class="mb-3">
+    <div class="bg-white rounded shadow p-2">
+        <div class="accordion" id="accordionExample">
+            
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  Articles
+                </button>
+              </h2>
+              <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                <div class="accordion-body bg-white">
+                    <div class="bg-white">
+                        <table class="table table-striped table-advance table-bordered purchased-table">
+                            
+                           
+                            
+                            <div class="">
+                                <input type="text" class="form-control search-invoice" placeholder="Rechercher " data-catgoryid="1">
+                            </div>
+                            <thead>
+                            <tr>
+                                <th><i class="fa fa-bullhorn"></i>
+                                Article</th>
+                                <th><i class=" fa fa-bookmark"></i> 
+                                    Prix unit.
+                                </th>
+                                <th class=""><i class=" fa fa-bookmark"></i> 
+                                    Quantité
+                                </th>
+                                <th>remise</th>
+                                <th>total</th>
+                                
+                            </tr>
+                            </thead>
+                            <tbody class="product-table-body">
+                            {% for i in items %}
+                            <tr>
+                                <td>{{i.name}}</td>
+                                <td class="priceholder price">{{i.price}}</td>
+                                <td class="qtyholder">{{i.qty}}</td>
+                                <td class="remiseholder">{{i.remise}}%</td>
+                                <td class="totalholder">{{i.total}}</td>
+                                <td>
+                                    <button class="fa fa-barcode btn border" onclick="barcodeinbonachat(event, '{{i.item_id}}')"></button> 
+                                </td>
+                                
+                            </tr>
+                            {% endfor %}
+                            
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="bg-white rounded shadow p-2">
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Avances
+                </button>
+              </h2>
+              <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                <div class="accordion-body bg-white">
+                    <div class="d-flex justify-content-between">
+    
+                        <div class="text-end">
+                            <a class="btn btn-sm btn-info" href="#" data-abc="true" onclick="PrintInvoice('avances')">
+                                <i class="fa fa-print mr-1"></i> Print </a>  
+                        </div>
+                        <button type="button" class="btn btn-success addoneproduct" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Ajouter+
+                        </button>
+                    </div>
+                    <div id="avances">
+                        <table class=" table table-advance table-hover table-bordered" >
+                            
+                            <tbody class="ledger-table-body">
+                            <tr>
+                                <th>Date</th>
+                                <th>Mantant</th>
+                                <th>info</th>
+                                
+                            </tr>
+                            {% for i in avances %}  
+                            <tr>
+                                <td>
+                                    {{i.date|date:"H:i d/m/Y"}}
+                                </td>
+                                <td>
+                                    {{i.avance}}
+                                </td>
+                                <td>
+                                    {{i.details}}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+              </div>
+            </div>
+            
+            
+          </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function barcodeinbonachat(event, productid){
+        codebarprice=$(event.target).parent().parent().find('.price')
+        console.log('codebarprice', codebarprice)
+        supplier=$('.supplier').text()
+        //codebarqty=$('.codebarqty').val()
+        if (codebarprice.text()=="" || codebarprice.text()==0){
+            codebarprice.addClass('border-danger')
+            return
+        }
+        codebarprice.removeClass('border-danger')
+        // if (codebarqty=="" || codebarqty==0){
+        //   $('.codebarqty').addClass('border-danger')
+        //   return
+        // }
+        // $('.codebarqty').removeClass('border-danger')
+
+        url = window.location.pathname.split( '/' );[0]
+        // var myWindow = window.open('http://'+window.location.href.split( '/' )[2]+'/product/printbarcodes?productid={{product.id}}&qty='+codebarqty+'&price='+codebarprice, '', 'width=900,height=900');
+        var myWindow = window.open('http://'+window.location.href.split( '/' )[2]+'/product/printbarcodes?achat=1&productid='+productid+'&price='+parseInt(codebarprice.text())+'&supplier='+supplier, '', 'width=900,height=900');
+
+        myWindow.focus();
+
+        myWindow.addEventListener('load', function() {
+        console.log('New window loaded.');
+
+        // Wait for 5 seconds before printing
+        setTimeout(function() {
+        try {
+        myWindow.print();
+        console.log('Print command issued.');
+        myWindow.close();
+        console.log('New window closed.');
+        } catch (e) {
+        console.error('Failed to print and close the window:', e);
+        }
+        }, 300); // 1000 milliseconds = 1 seconds
+        }, false);
+    }
+    
+    function calculate(t){
+        $('.calculate').each((i, el)=>{
+            $(el).on('keyup', ()=>{
+                
+                price=$('.price').val()
+                qty=$('.qty').val()
+                remise=$('.remise').val()
+                remiseamount=(price*remise)/100
+                afterremise=price-remiseamount
+                finalamount=(qty*afterremise).toFixed(2)
+                total=$('.total')
+                total.val(finalamount)
+                t.text(finalamount)
+                var totalSum = 0;
+                $('.totalholder').each(function() {
+                    totalSum += parseFloat($(this).text());
+                });
+                $('#grandTotal').text(totalSum.toFixed(2))
+            })
+        })
+    }
+
+    function PrintInvoice(divName){
+         var printContents = document.getElementById(divName).innerHTML;
+         var originalContents = document.body.innerHTML;
+         document.body.innerHTML = printContents;
+         $('body').css('font-size', '12px')
+         $('.head').addClass('')
+         $('table').css('font-size', '9px');
+         $("table > thead > tr > th").css('padding', '0px');
+         $("table > tbody > tr > td").css('padding', '0px');
+         $('body').addClass('d-flex flex-column vh-100 p-3')
+         $('.foooterfacture').addClass('mt-auto');
+         window.print();
+         document.body.innerHTML = originalContents;
+    }
+    
+    $('.editlinebtn').each((i, el)=>{
+        $(el).on('click', ()=>{
+            totalholder=$(el).parent().parent().find('.totalholder')
+            console.log(totalholder)
+            article=$(el).data('article')
+            qty=$(el).data('qty')
+            price=$(el).data('price')
+            remise=$(el).data('remise')
+            total=$(el).data('total')
+            itemid=$(el).data('itemid')
+            console.log(itemid)
+            $('.article').val(article)
+            $('.qty').val(qty)
+            $('.price').val(price)
+            $('.remise').val(remise)
+            $('.total').val(total)
+            $('.itemid').val(itemid)
+            calculate(totalholder)
+        })
+    })
+
+    $('.addpaymentbtn').on ('click', function () {
+        if ($('.amount').val()=='' || $('.details').val()==''){
+            console.log('err')
+            $('.error').show()
+        }
+        else{
+            $(this).addClass('disabled');
+            $(this).html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');
+            
+            $.post('/product/addpaymentsupplier/{{bon.id}}', {
+                'amount':$('.amount').val(),
+                'details':$('.details').val(),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function(data, status){
+                alert('تمت الاضافة')
+                location.reload()
+            })
+        }
+        
+});
+
+</script>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% for i in products %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+
+        <strong class="product">
+            {{i.ref.upper}} - {{i.category.name.upper}}  - {{i.car}} <strong class="p-2 bg-success text-white">
+                {{i.mark.name.upper}}
+            </strong>
+        </strong>
+    </div>
+    <div>
+        
+        <button class="btn btn-primary addexeptionbtn fa fa-plus" ref="{{i.ref}}" category="{{i.category.name.upper}}" mark="{{i.mark}}" car="{{i.car}}" stock="{{i.stock|floatformat:-2}}" id="{{i.id}}" price="{{i.pr_achat}}" {% if i.image %} image="{{i.image.url}}" {% endif %}></button>
+
+    </div>
+</div>
+{% empty %}
+<div class="product">
+    No product
+</div>
+{% endfor %}

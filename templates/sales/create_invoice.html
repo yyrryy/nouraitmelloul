@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block menu_sales %}active{% endblock %}
+{% block submenu_create_bill %}active{% endblock %}
+{% block content %}
+	<style>
+		.item-row th {
+			background: #eee;
+		}
+
+		.delete-btn {
+			position: relative;
+		}
+
+		
+	</style>
+
+<!-- add client modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        
+        <div class="modal-body">
+            <form class="form-horizontal add-ledger-form" action="{% url 'ledger:add_new_ledger' %}" method="post" autocomplete="off">
+                <div class="form-group">
+                        {% csrf_token %}
+                        <span class="text-danger customererror" style="display: none;">
+                            املئ الخانات
+                        </span>
+                        <br>
+                        <label>
+                            <strong>Nom</strong>
+                          </label>
+                          <span class="customer-existing" style="color: red; display: none">Client exist deja</span>
+                          <span class="customer-error" style="color: red; display: none">Obligatoire</span>
+                          <input type="text" class="form-control customer" name="customer_name" >
+                          <br>
+                          <label>
+                            <strong>Phone</strong>
+                          </label>
+                          <input type="text" class="form-control customer_phone" name="customer_phone" >
+                          <label>
+                            <strong>ICE</strong>
+                          </label>
+                          <input type="text" class="form-control customer_ice" name="address" >
+                          <br>
+                          <button type="button" class="btn btn-primary w-100 addclientbtn">
+                            Valider
+                          </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          
+        </div>
+      </div>
+</div>
+
+<!-- end add client modal -->
+<!-- to distinguish between invoice create and update -->
+<input type="hidden" class="createinvoice">
+
+<div class="row mb-3 position-relative">
+
+
+<!-- bon articles -->
+<div class="col-10">
+
+    <div class="shadow rounded p-2 bg-white">
+        
+        <div class="alert alert-danger text-center item-error" style="display: none;" role="alert">
+        </div>
+        <div class="d-flex justify-content-between mt-3">
+                <div>
+                    <strong class="bg-dark">date:</strong><br>
+                    <input type="date" class="datebon">
+                </div>
+                <div>
+                    <select class="form-selsect select2 customer " name="customer" id="customer">
+                        <option value="0">
+                            Client
+                        </option>
+                        {% for customer in customers %}
+                            <option value="{{ customer.id }}">{{ customer.customer_name }} - {{ customer.customer_phone }}</option>
+                        {% endfor %}
+                    </select><br>
+                    <!-- <button type="button" class="btn btn-success addoneproduct" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        + Client
+                    </button> -->
+                </div>
+                
+            
+        </div>
+        <hr>
+        <div class="mb-3 row p-2 rounded" style="background:rgb(34, 25, 71);">
+            <div class="itemsselectholder col-6">
+                <input class="form-control article" name="article" autocomplete="on" placeholder="Article">
+            </div>
+            <div class="col-2">
+                        
+                <input type="number" class="addqtyinp form-control" placeholder="Qty">
+                <div class="addstock text-white"></div>
+            </div>
+            <div class="col-2">
+                
+                <input type="number" class="addpriceinp form-control" placeholder="Prix">
+                <div class="addprice text-white"></div>
+            </div>
+            
+            <div class="col-2">
+
+                <button class="btn btn-primary w-100" onclick="addrow()">+</button>
+            </div>
+            <input type="text" class="addname" hidden>
+        </div>
+        <div id="item-data-sc" class="table-responsive item-data-sc">
+            <table class="table table-bordered">
+                <thead>
+                <tr class="">
+                    <th style="width: 45%;">Article</th>
+                    <th>Prix ventes</th>
+                    <th>Quantité</th>
+                    <th>Total</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody class="itemsbon">
+                
+                </tbody>
+            </table>
+            
+
+        </div>
+    </div>
+</div>
+
+
+<!-- bon billing -->
+<div class="col-2" style="right:0; ">
+
+    <div class="shadow bg-white p-2 rounded">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                <tbody>
+                <tr hidden>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right"><strong>Sub Total</strong></td>
+                    <td><span id="subtotal">0.00</span></td>
+                </tr>
+                <tr hidden>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right"><strong>Discount</strong></td>
+                    <td><input autocomplete="off" class="form-control" id="discount" value="0" type="text"></td>
+                </tr>
+                <tr hidden>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right"><strong>Shipping</strong></td>
+                    <td><input autocomplete="off" class="form-control" id="shipping" value="0" type="text"></td>
+                </tr>
+                <tr>
+                    <!-- <td><strong>Total Qty: </strong><span id="totalQty" style="color: red; font-weight: bold">0</span></td> -->
+                    
+                    <td class="text-right"><strong>Total</strong></td>
+                    <td><span id="grandTotal" style="color:red">0</span></td>
+                </tr>
+                <tr hidden>
+                    <td class="text-right"><strong>Payé</strong></td>
+                    <td><input autocomplete="off" class="form-control" id="paidAmount" value="0" type="number"></td>
+                </tr>
+                <tr hidden>
+                    <td class="text-right"><strong>Rest</strong></td>
+                    <td><span id="remainingAmount">0</span></td>
+                </tr>
+                
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-between">
+            <!-- <button class="btn btn-primary paid">
+                Payé
+            </button> -->
+            <a style="font-size: large" id="create-invoice" href="javascript:;" title="Create Invoice" class="btn btn-primary pull-right" id="load" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing Order">Valider</a>
+        </div>
+    </div>
+</div>
+
+
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'js/jquery.invoice.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.scannerdetection.js' %}"></script>
+    <script>
+
+        localStorage.removeItem('pdctsinbon')
+        localStorage.removeItem('bonitems')
+        function removeline(event){
+            $(event.target).closest('tr').remove();
+            total=parseFloat($(event.target).closest('tr').find('.total').text())
+            oldtotal=parseFloat($('#grandTotal').text())
+            $('#grandTotal').text((oldtotal-total).toFixed(2))
+            
+            
+        }
+        function addrow(){
+            
+            parentdiv=$(this).parent().parent()
+            
+            
+             // first time adding to localstorg
+            qtyinpadd=$('.addqtyinp').val()
+            priceinpadd=$('.addpriceinp').val()
+            article=$('.article').val()
+            if (article=='' || priceinpadd=='' || qtyinpadd==''){
+                alertify.error('Champs vide')
+                return
+            }
+          
+            
+            
+        //   if (pdcts.includes(id)){
+        //     console.log('in locals')
+        //     dx=pdcts.indexOf(id)
+            
+        //     // get index of id
+            
+            
+        //     bonitems[dx].qty=parseInt(bonitems[dx].qty)+1
+        //     pricesfromlocalstorage=bonitems[dx].prices
+        //     pricesfromlocalstorage.push((parseInt(qtyinpadd)*parseFloat(priceinpadd)).toFixed(2))
+        //     bonitems[dx].prices=pricesfromlocalstorage
+        //     // insert it in index to remain the same order, order is important here
+        //     localStorage.setItem('bonitems',JSON.stringify(bonitems))
+           
+        //     let qtyinput=$(`#itemrow${id}`).find('.qty')
+        //     let total=$(`#itemrow${id}`).find('.total')
+        //     let price=$(`#itemrow${id}`).find('.price')
+        //     // to calculate ponire we need to store the qtys*prices
+        //     prices=JSON.parse(price.attr('prices'))
+        //     prices.push((parseInt(qtyinpadd)*parseFloat(priceinpadd)).toFixed(2))
+        //     sum=0
+        //     for (i of prices){
+        //         sum+=i
+        //     }
+        //     newqty=parseInt(qtyinput.val())+parseInt(qtyinpadd)
+        //     pondir=sum/newqty
+        //     qtyinput.val(newqty)
+        //     price.val(pondir)
+        //     total.text(sum)
+        //     $(`#itemrow${id}`).css('background', 'greenyellow')
+        //     setTimeout(() => {
+        //         $(`#itemrow${id}`).css('background', 'none')
+        //     }, 2500);
+        //     jQuery().invoice().init
+
+        //     return
+        //   }
+        $('.itemsbon').prepend(`<tr class="item-row"><td id="item-name" class="item-name"><strong class="invoice-item" id="invoice-item">${article}</strong></td><td><input readonly min=0 value=${priceinpadd} class="form-control price" prices="[${(qtyinpadd*priceinpadd).toFixed(2)}]" placeholder="Price" type="number" ><br><span class="text-danger errorprice d-none bg-white">Prix </span> </td><td><input readonly class="form-control qty" placeholder="Quantity" type="number" min=1 value=${qtyinpadd} ></td><td class="total">${(qtyinpadd*priceinpadd).toFixed(2)}</td><td><i class="btn btn-danger delete" title="Supprimer" onclick="removeline(event)"></i></td></tr>`);
+        oldtotal=parseFloat($('#grandTotal').text())
+        total=(qtyinpadd*priceinpadd).toFixed(2)
+       $('#grandTotal').text(oldtotal+parseFloat(total))
+        $('.article').focus()
+        $('.article').val('')
+        $('.addqtyinp').val('')
+        $('.addpriceinp').val('')
+        $('.addstock').text('')
+        $('.addprice').text('')
+        
+        // emptying the fields
+        
+
+    }
+        
+        // set products in local storage
+        // remove prdcts localstorage when valider
+        
+        
+    $(document).ready(function () {
+        function showerror(m){
+            $('.item-error').show().text(m)
+        }
+        // add client
+        $('.addclientbtn').on('click', ()=>{
+            if($('.customer').val() == ''|| $('.customer_phone').val()==''){
+                console.log('error')
+                $('.customererror').show();
+                return false;
+            }else{
+                $('.addclientbtn').addClass('disabled')
+                $.post(
+                    '{% url "product:addclient" %}',
+                    {
+                        'name':$('.customer').val(),
+                        'phone':$('.customer_phone').val(),
+                        'ice':$('.customer_ice').val(),
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    function(data){
+                        location.reload();
+                    }
+                )
+            }
+        })
+
+        
+        
+        
+
+
+        $('.paid').on('click', ()=>{
+            let total=$('#grandTotal').text()
+            // assign total to received
+            $('#paidAmount').val(total)
+        })
+
+        $('.btn-primary').on('click', function () {
+            $('.item-error').hide();
+        });
+    });
+    </script>
+    <script>
+        $('#create-invoice').on('click', function() {
+            let customer=$('#customer').val()
+            let items=[]
+            let total=$('#grandTotal').text()
+            let date=$('.datebon').val()
+            itemrows=$('.item-row').toArray();
+            if (itemrows.length==0){
+                alertify.error('Ajouter des articles')
+                return
+            }
+            for (i of itemrows){
+                article=$(i).find('.invoice-item').text()
+                itemtotal=$(i).find('.total').text()
+                price=$(i).find('.price').val()
+                qty=$(i).find('.qty').val()
+                item={
+                    'article':article,
+                    'total':itemtotal,
+                    'price':price,
+                    'qty':qty,
+                }
+                items.push(item)
+            }
+            if (customer==0){
+                alertify.error('Client obligatoire')
+                return
+            }
+            if (date==''){
+                alertify.error('Date obligatoire')
+                return 
+            }
+            if (total==0){
+                alertify.error('Total obligatoire')
+                return
+            }
+            $(this).button('loading');
+            console.log(items)
+            $.post(
+                '{% url "product:createbon" %}',
+                {
+                    'customer':customer,
+                    'items':JSON.stringify(items),
+                    'total':total,
+                    'date':date,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                function(data){
+                    if (data.error){
+                        alertify.error(data.error)
+                        $('#create-invoice').button('reset');
+                    }
+                    else{
+                        alertify.success('Facture crée')
+                        localStorage.removeItem('pdctsinbon')
+                        localStorage.removeItem('bonitems')
+                        location.href='/sales/invoice/list'
+                    }
+                }
+            )
+        });
+
+        $('.form-control').click (function () {
+            $('.list-error').hide();
+            checkDec(this);
+
+        });
+
+        function checkDec(el){
+            var ex = /^[0-9]+\.?[0-9]*$/;
+            if(ex.test(el.value)==false){
+                el.value = el.value.substring(0,el.value.length - 1);
+            }
+        }
+    </script>
+{% endblock %}
