@@ -3154,13 +3154,15 @@ def pp(request):
 import json, ast
 def zz(request):
     data=[]
-    start=100
     [["99.00", 2.0, "COPIMA"], ["99.00", 8, "izejze"]]
     for item in Product.objects.all():
         prices=json.loads(item.prices)
 
         qties = 0
         for i in prices:
+            if item.stock == 0:
+                item.prices=[]
+                item.save()
             if float(i[1]) < 0:
                 data.append([item.id, qties, item.stock])
             qties+=float(i[1])
