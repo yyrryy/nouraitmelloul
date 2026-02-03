@@ -27,13 +27,13 @@ def products():
 def command():
     return Product.objects.filter(command=True).count
 
-@register.simple_tag
-def ensemble():
-    ids=[54, 70, 58, 86, 90, 75, 51, 76, 83, 156, 59, 57]
-    #ids=[5, 17]
-    categories=[Category.objects.get(pk=i) for i in ids]
-    products = Product.objects.filter(stock__lt=1, category__in=categories).annotate(num_products=Count('id'))
-    return products.count()
+# @register.simple_tag
+# def ensemble():
+#     ids=[54, 70, 58, 86, 90, 75, 51, 76, 83, 156, 59, 57]
+#     #ids=[5, 17]
+#     categories=[Category.objects.get(pk=i) for i in ids]
+#     products = Product.objects.filter(stock__lt=1, category__in=categories).annotate(num_products=Count('id'))
+#     return products.count()
 
 
 @register.simple_tag
