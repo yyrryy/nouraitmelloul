@@ -3081,7 +3081,7 @@ def listreleve(request):
 def releveprint(request):
     id=request.GET.get('id')
     releve=Releve.objects.get(pk=id)
-    releveitems=Releveitems.objects.filter(releve=releve).order_by('-id')
+    releveitems=Releveitems.objects.filter(releve=releve).order_by('id')
     # releve=Releve.objects.get()
     return render(request, 'products/releveprint.html', {'releve':releve, 'items':releveitems})
 
