@@ -2395,12 +2395,16 @@ def createfacture(request):
     print('>>>>>', datebon)
     datebon=datetime.strptime(datebon, '%Y-%m-%d')
     total=request.POST.get('total')
+    avance=request.POST.get('avance')
     manualswitch=request.POST.get('manualswitch')=='true'
     customer=request.POST.get('customer')
     items=json.loads(request.POST.get('items'))
     print('>>>>>', datebon)
     #create invoice
     facture=Facture.objects.create(total=total, date=datebon, client_id=customer, facture_no=number, ismanual=manualswitch)
+    if avance:
+        facture.avance=avance
+        facture.save()
     # add total to caisse
     #create outproducts
     # todo: when contoir, we dont need to reduse qty from stock, it(s already done)
@@ -2643,7 +2647,9 @@ def facturedetails(request, id):
     items=Factureitems.objects.filter(facture=facture).order_by('-id')
     ctx={
         'facture':facture,
-        'items':items
+        'items':items,
+        # just let it, am using it in the frontend
+        'total':facture.total - facture.avance
     }
     return render(request, 'products/facturedetails.html', ctx)
 def facturedetails1(request, id):
