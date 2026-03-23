@@ -61,7 +61,10 @@
               <div class="col-6 ms-5">
                 <div>
                    
-                  <strong>STE: {{ devise.client.customer_name.upper }}.</strong>
+                  <strong>STE: {{ devise.client.customer_name.upper }}.</strong><br>
+                  <strong>
+                    {% if devise.note %}{{devise.note}}{%endif%}
+                  </strong>
                 </div>
                 <!-- <div>
                   <strong>ICE: {{ devise.client.ice }}</strong>

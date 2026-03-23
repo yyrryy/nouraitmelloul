@@ -406,6 +406,7 @@ class Devise(models.Model):
     date=models.DateField()
     total=models.FloatField(default=0.00, null=True)
     Devise_no=models.CharField(max_length=100)
+    note=models.CharField(max_length=100, default=None, null=True)
 
 class Deviseitems(models.Model):
     devise=models.ForeignKey(Devise, on_delete=models.SET_NULL, null=True)

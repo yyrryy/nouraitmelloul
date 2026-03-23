@@ -2620,11 +2620,12 @@ def createdevise(request):
     print('>>>>>', datebon)
     datebon=datetime.strptime(datebon, '%Y-%m-%d')
     total=request.POST.get('total')
+    note=request.POST.get('note')
     customer=request.POST.get('customer')
     items=json.loads(request.POST.get('items'))
     print('>>>>>', datebon)
     #create invoice
-    devise=Devise.objects.create(total=total, date=datebon, client_id=customer)
+    devise=Devise.objects.create(total=total, date=datebon, client_id=customer, note=note)
     # add total to caisse
     #create outproducts
     # todo: when contoir, we dont need to reduse qty from stock, it(s already done)

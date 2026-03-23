@@ -6,7 +6,7 @@ from pis_product.models import ProductDetail
 from pis_product.models import PurchasedProduct
 from pis_product.models import ExtraItems
 from pis_product.models import ClaimedProduct
-from pis_product.models import StockIn,StockOut, Category, SubCategory, Itemsbysupplier, Avancesbon, Supplier, Mark, Avoir, Reforigin, Facture, Factureitems, Releve, Releveitems, Todo
+from pis_product.models import StockIn,StockOut, Category, SubCategory, Itemsbysupplier, Avancesbon, Supplier, Mark, Avoir, Reforigin, Facture, Factureitems, Releve, Releveitems, Todo, Devise
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
@@ -154,6 +154,7 @@ admin.site.register(Factureitems)
 admin.site.register(Releve)
 admin.site.register(Releveitems)
 admin.site.register(Todo)
+admin.site.register(Devise)
 # admin.site.register(Reforigin)
 
 # pis_product.models
