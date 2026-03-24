@@ -22,7 +22,7 @@ echo Backing up database %DATABASE_NAME%...
 :: Set PGPASSFILE environment variable to point to .pgpass file
 set PGPASSFILE=C:\Users\Public\pgpass.conf
 
-"G:\Program Files\PostgreSQL\16\bin\pg_dump.exe" -h localhost -U %USER% -b -v -f "%BACKUP_FILE%" %DATABASE_NAME%
+"G:\PostgreSQL\16\bin\pg_dump.exe" -h localhost -U %USER% -b -v -f "%BACKUP_FILE%" %DATABASE_NAME%
 
 echo Backup completed.
 
