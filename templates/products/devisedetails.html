@@ -187,7 +187,7 @@
          window.print();
          document.body.innerHTML = originalContents;
     }
-    $('.frenchword').text($.spellingNumber({{devise.total|floatformat:2}}, {
+    $('.frenchword').text($.spellingNumber("{{devise.total|floatformat:2}}", {
     lang:'fr',
     wholesUnit:"Dirhams",
     fractionUnit:"cents",
@@ -195,6 +195,6 @@
     decimalSeperator:"et"
 
   }))
-console.log('rr', {{devise.total}})
+console.log('rr', "{{devise.total}}")
 </script>
 </html>
