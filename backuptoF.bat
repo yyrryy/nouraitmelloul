@@ -32,4 +32,5 @@ copy "%BACKUP_FILE%" %EXTERNAL2%
 copy "%BACKUP_FILE%" %EXTERNAL3%
 echo Copy completed.
 
+pause
 endlocal
