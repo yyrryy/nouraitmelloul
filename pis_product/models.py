@@ -363,7 +363,7 @@ class Facture(models.Model):
     )
     date=models.DateField()
     total=models.FloatField(default=0.00, null=True)
-    avance=models.FloatField(default=0.00, null=True)
+    avance=models.FloatField(default=0.00, null=True, blank=True)
     facture_no=models.CharField(max_length=100)
     ispaid=models.BooleanField(default=False)
     ismanual=models.BooleanField(default=False)
