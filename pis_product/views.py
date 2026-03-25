@@ -3278,7 +3278,6 @@ def searchcomptaresult(request):
     factures = Facture.objects.filter(facturefilters).distinct()
     devis = Devise.objects.filter(devisfilters).distinct()
     releves = Releve.objects.filter(relevefilters).distinct()
-    print('ff', factures)
     return JsonResponse({
         'html': render(request, 'products/searchcomptatrs.html', {'factures': factures, 'devis':devis, 'releves':releves}).content.decode('utf-8')
     })
