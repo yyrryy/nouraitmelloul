@@ -366,6 +366,7 @@ class Facture(models.Model):
     avance=models.FloatField(default=0.00, null=True, blank=True)
     facture_no=models.CharField(max_length=100)
     ispaid=models.BooleanField(default=False)
+    # is ,anual ,eans is entreprise
     ismanual=models.BooleanField(default=False)
     note=models.TextField(default='', null=True, blank=True)
 

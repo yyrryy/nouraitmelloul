@@ -13,6 +13,7 @@
                 
                     <div class="form-group">
                             {% csrf_token %}
+                            <div class="error text-danger"></div>
                             <label>
                                 <strong>Nom</strong>
                             </label>
@@ -214,7 +215,12 @@
                         'csrfmiddlewaretoken': '{{ csrf_token }}'
                     },
                     function(data){
-                        location.reload();
+                        if (data.success){
+                            location.reload();
+                        }else{
+                            $('.addclientbtn').removeClass('disabled')
+                            $('.error').text(data.error)
+                        }
                     }
                 )
             }

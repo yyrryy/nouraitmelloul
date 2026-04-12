@@ -2,6 +2,9 @@
     <tr class="facturestr" {% if i.ispaid %}style="background:yellowgreen;"{% endif %}>
         <td>
             {{ i.facture_no }} (Facture)
+            {% if i.ismanual %}
+            (Entreprise)
+            {% endif %}
         </td>
         <td>{% if i.client %}{{ i.client.customer_name|title}}{% else %}-{% endif %}</td>
         <td>{{ i.total|floatformat:2 }}</td>
@@ -9,7 +12,7 @@
         <td>
             <a href="/product/modifierfacture/?id={{i.id}}">Modifer</a>
             <a href="{% url 'product:facturedetails' id=i.id %}"><button class="btn btn-xs fa fa-download bg-primary"></button></a>
-            {% if i.ispaid %}{{i.note}}{%endif%}
+            
             <!-- <a href="{% url 'product:facturedetails1' id=i.id %}"><button class="btn btn-xs fa fa-download bg-primary"></button>B.L</a>
             <a href="{% url 'product:facturedetails2' id=i.id %}"><button class="btn btn-xs fa fa-download bg-primary"></button>B.C</a>
             <a href="{% url 'product:facturedetails3' id=i.id %}"><button class="btn btn-xs fa fa-download bg-primary"></button>IMTRC</a> -->
