@@ -383,9 +383,9 @@ def addclient(request):
     name=request.POST.get('name')
     phone=request.POST.get('phone') or 0000000000
     ice=request.POST.get('ice') or None
-    exist = Customer.objects.filter(ice=ice).exists()
-    if exist:
-        return JsonResponse({'success':False, 'error':'Client avec ce ICE existe deja'})
+    # exist = Customer.objects.filter(ice=ice).exists()
+    # if exist:
+    #     return JsonResponse({'success':False, 'error':'Client avec ce ICE existe deja'})
     adress=request.POST.get('address') or None
     print(name, phone, adress, ice)
     Customer.objects.create(customer_name=name,customer_phone=phone,address=adress, ice=ice, retailer=Retailer.objects.get(id=request.user.retailer_user.retailer.id))
