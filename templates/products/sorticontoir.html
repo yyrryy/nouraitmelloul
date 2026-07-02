@@ -54,7 +54,17 @@
                     </tr>
                     </thead>
                     <tbody class="itemsbon">
-
+                        {% for i in items %}
+                        <tr>
+                            <td><img src="{{ i.product.image.url }}" alt="{{ i.product.name }}" class="img-fluid" style="max-height: 100px;"></td>
+                            <td>{{ i.product.mark.name }}</td>
+                            <td>{{ i.product.name }}</td>
+                            <td>{{ i.product.stock }}</td>
+                            <td>1</td>
+                            <td>{{ i.pr_achat }}</td>
+                            <td><i class="btn btn-danger delete" title="Supprimer" productid="{{ i.product.id }}" onclick="removeline(event, '{{ i.id }}')">Retour</i></td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
 

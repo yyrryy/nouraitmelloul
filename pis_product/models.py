@@ -256,6 +256,9 @@ class PurchasedProduct(DatedModel):
     product = models.ForeignKey(
         Product, related_name='purchased_product',on_delete=models.CASCADE, default=None, null=True, blank=True
     )
+    scanned = models.BooleanField(default=False)
+    # to track the scanned products that are validated
+    validated = models.BooleanField(default=False)
     invoice = models.ForeignKey(
         'pis_sales.SalesHistory', related_name='purchased_invoice',
         blank=True, null=True,on_delete=models.CASCADE

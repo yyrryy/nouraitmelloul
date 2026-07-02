@@ -2837,12 +2837,12 @@ def generate_barcode(request, code):
     
     return response
 def sorticontoir(request):
-    
     ctx={
         'title':'Bon Sortie comptoir',
         'present_date': timezone.now().date(),
         'children':Category.objects.filter(children__isnull=True).order_by('name'),
-        'marks':Mark.objects.all()
+        'marks':Mark.objects.all(),
+        'items':PurchasedProduct.objects.filter(scanned=True, validated=False).order_by('-id')
     }
     return render(request, 'products/sorticontoir.html', ctx)
 
@@ -2947,7 +2947,7 @@ def scanproductdata(request):
     product.prices=json.dumps(prices)       
     product.stock-=1
     product.save()
-    out=PurchasedProduct.objects.create(product=product, quantity=1, price=price)
+    out=PurchasedProduct.objects.create(product=product, quantity=1, price=price, scanned=True)
     newstock=product.stock
     if newstock==0 or newstock <= product.minstock:
         # supplier=product.originsupp
@@ -2998,29 +2998,30 @@ def sortiecomptoir(request):
     #create invoice
     invoice=SalesHistory.objects.create(retailer=retailer, grand_total=total)
     # add total to caisse
-    
+    notvalidated_items=PurchasedProduct.objects.filter(scanned=True, validated=False)
+    notvalidated_items.update(validated=True, invoice=invoice)
     #create outproducts
     # todo: when contoir, we dont need to reduse qty from stock, it(s already done)
-    purchased_items_id = []
-    with transaction.atomic():
-        for item in items:
-            try:
-                product = Product.objects.get(
-                    pk=item.get('item_id'),
-                )
-                purchased=PurchasedProduct.objects.create(
-                    product=product,
-                    quantity=item.get('qty'),
-                    price=item.get('pr_achat'),
-                    purchase_amount=item.get('total'),
-                    invoice=invoice
+    # purchased_items_id = []
+    # with transaction.atomic():
+    #     for item in items:
+    #         try:
+    #             product = Product.objects.get(
+    #                 pk=item.get('item_id'),
+    #             )
+    #             purchased=PurchasedProduct.objects.create(
+    #                 product=product,
+    #                 quantity=item.get('qty'),
+    #                 price=item.get('pr_achat'),
+    #                 purchase_amount=item.get('total'),
+    #                 invoice=invoice
 
 
-                )
-                #purchased_items_id.append(purchased.id)
-            except:
-                pass
-    #invoice.purchased_items.set(purchased_items_id)
+    #             )
+    #             #purchased_items_id.append(purchased.id)
+    #         except:
+    #             pass
+    # #invoice.purchased_items.set(purchased_items_id)
     return JsonResponse({
         'success':True
     })
