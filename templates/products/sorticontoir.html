@@ -56,7 +56,7 @@
                     <tbody class="itemsbon">
                         {% for i in items %}
                         <tr>
-                            <td><img src="{{ i.product.image.url }}" alt="{{ i.product.name }}" class="img-fluid" style="max-height: 100px;"></td>
+                            <td><img {% if i.product.image %}src="{{ i.product.image.url }}" {% endif %}alt="{{ i.product.name }}" class="img-fluid" style="max-height: 100px;"></td>
                             <td>{{ i.product.mark.name }}</td>
                             <td>{{ i.product.name }}</td>
                             <td>{{ i.product.stock }}</td>
